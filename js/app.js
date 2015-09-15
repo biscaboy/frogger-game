@@ -7,7 +7,7 @@
 Static variable section
 Since Javascript containt not static key word, I've impletemented
 these variables as functions so that their value is protected
-makeing them behave as statics with a global scope.
+making them behave as statics with a global scope.
 Credit for this pattern: chamnap @ http://chamnapchhorn.blogspot.com/2008/07/trick-to-use-static-variables-in.html
 //////////////////////////////////////////////////////////////////////
 */
@@ -19,16 +19,16 @@ var OFFSET_X = (function(){
 var OFFSET_Y = (function(){
     return 83;
 })();
-// @todo:  add more colums and more rows ... make it dynamic.
-// NUM_COLS:  Total number of columns in the playing space (right most row)
+// @todo:  make it dynamic instead of static (maybe based on levels?)
+// NUM_COLS:  Total number of columns in the playing space
 var NUM_COLS = (function(){
-    return 5;  
+    return 7;  
 })();
-// NUM_ROWS:  Total number of rows in the playing space (bottom row)
+// NUM_ROWS:  Total number of rows in the playing space  
 var NUM_ROWS = (function(){
     return 6;  
 })();
-// FIRST_COL: Number of the left most column in the playing space (minus 1)
+// FIRST_COL: Number of the left most column in the playing space
 var FIRST_COL = (function(){
     return 1;
 })();
@@ -36,10 +36,13 @@ var FIRST_COL = (function(){
 var FIRST_ROW = (function(){
     return 1; 
 })();
+// @todo:  make it dynamic. (based on level?)
 // NUM_ENEMIES:  The starting number of enemies to render in the game.
+// Having an enemy for each column makes the game too hard... so one less is fun.
 var NUM_ENEMIES = (function(){
-    return 5;
+    return NUM_COLS - 1;
 })();
+// @todo: add a sprite selector.
 // Images for the game players, gems and enemies.
 var PLAYER_DEFAULT_IMAGE = (function(){
     return 'images/char-boy.png'; 
@@ -55,9 +58,6 @@ var GEM_GREEN_IMAGE = (function(){
 })();
 var GEM_ORANGE_IMAGE = (function(){
 	return 'images/Gem Orange.png';
-})();
-var NUM_GEMS = (function(){
-	return 3;
 })();
 
 //////////////////////////////////////////////////////////////////////
@@ -94,16 +94,16 @@ function _roundedRect (x, y, width, height, radius){
 // Class:  Scoreboard 
 //  
 // Object representing the scoreboard where the player's score is 
-// diplayed.
+// displayed.
 //
-// A score board also has Gems that it controls as the player's 
+// A score board also adds Gems to the fieldf as the player's 
 // score goes higher.
 //////////////////////////////////////////////////////////////////////
 var Scoreboard = function() {
-	this.score = 0;
-	this.position = { x: 430, y: 0 };
+	// formatting properties
+	this.position = { x: (NUM_COLS - 1) * OFFSET_X, y: 0 };
 	this.textposition = { x: 50, y: 50 };
-	this.dimension = { height: 50, width: 75 };
+	this.dimension = { height: 50, width: OFFSET_X };
 	this.bgcolor = "#000";
 	this.borderwidth = 3;
 	this.bordercolor = "#fff";
@@ -112,14 +112,20 @@ var Scoreboard = function() {
 	this.textborderwidth = 1;
 	this.cornerradius = 15;
 	this.textsize = 18;
-	// boolean that keeps the scoreboard from being updated more than once.
-	this.ready = true;
+	
+	// state properties
+	this.score = 0;
+	// @todo currently not used could be useful for timestamps of events.
+	this.elapsedTime = 0;
+	
+	// animation properties - the score blinks when points are earned.
 	this.isVisible = true;
 	this.blinkTimer = 0;
 	this.animateScore = false;
 	this.animateCollision = false;
 	this.animationInitialized = false;
 	this.animationTimer = 0;
+
 };
 
 // CELEBRATION_DELAY:  how long to celebrate a score
@@ -128,11 +134,12 @@ Scoreboard.prototype.CELEBRATION_DELAY = (function(){
     return 2;  
 })();
 
+Scoreboard.prototype.getElapsedTime = function() {
+	return this.elapsedTime;
+}
+
 Scoreboard.prototype.increment = function(value) {
 	this.score += value;
-	// keep other updates from happening until reset.
-	// @todo: perhaps add a rolling update for multiple points (may need dt?)
-	this.ready = false;
 	this.animateScore = true;
 	this.animationTimer = 0;
 	// @todo make sure there is only one gem in a square.
@@ -152,16 +159,12 @@ Scoreboard.prototype.decrement = function(value) {
 	} else {
 		this.score = 0;
 	}
-	// keep other updates from happening until reset.
-	// @todo: perhaps add a rolling update for multiple points (may need dt?)
-	this.ready = false;
 	this.animateCollision = true;
 	this.animationTimer = 0;
 };
 
 // @todo:  if you clear a level then reset to 0
 Scoreboard.prototype.reset = function(){
-	this.ready = true;
 	this.isVisible = true;
 	this.textcolor = "#fff";
 	this.textbordercolor = "#fff";
@@ -205,10 +208,11 @@ Scoreboard.prototype.render = function() {
 	ctx.lineWidth = this.textborderwidth;
 	ctx.strokeText(this.score, this.position.x + this.dimension.width - 15, this.position.y + this.dimension.height - 15);
 
+	// display gems if any
 	if (gems.length > 0) {
-		for (var i = 0; i < gems.length; i++){
-			gems[i].render();
-		}
+	    for (var i = 0; i < gems.length; i++){
+		    gems[i].render();
+	    }
 	}
 };
 
@@ -236,6 +240,10 @@ Scoreboard.prototype.animate = function(dt, duration, color) {
 };
 
 Scoreboard.prototype.update = function(dt) {
+	// keeping track of how long we have played.
+	this.elapsedTime += dt;
+	
+	// has there been a collision or a score??
 	if (this.animateScore || this.animateCollision ) {
 		    	// increment the elapsed time to the timer.
         this.animationTimer += dt;
@@ -245,7 +253,7 @@ Scoreboard.prototype.update = function(dt) {
         } 
         this.blinkScore(dt, color);
         
-        // wait for timer to go off
+        // wait for timer to go off and then reset the animation
         if (this.animationTimer > this.CELEBRATION_DELAY) {
             this.reset();
         }
@@ -274,13 +282,13 @@ GamePiece.prototype.initAnimationState = function() {
 }
 
 // CELEBRATION_DELAY:  how long to celebrate a score
-// seconds to delay before resetting player to starting position.
+// seconds to delay before resetting piece to starting position.
 GamePiece.prototype.CELEBRATION_DELAY = (function(){
     return 2;  
 })();
 
 // COLLISION_ANIMATION_DELAY:  how long to animate a collision
-// seconds to delay before resetting player to starting position.
+// seconds to delay before resetting piece to starting position.
 GamePiece.prototype.COLLISION_ANIMATION_DELAY = (function(){
     return 1.5;  
 })();
@@ -342,8 +350,7 @@ GamePiece.prototype.getSprite = function() {
 //////////////////////////////////////////////////////////////////////
 // Method:  animate
 //	
-//  Shakes the player back and forth to show dread or excitement.
-//  This method also makes the scoreboard blink to add to the drama.
+//  Shakes the piece back and forth to show dread or excitement.
 //
 // Parameters: 
 // 	dt - delta of the time since last frame
@@ -353,7 +360,7 @@ GamePiece.prototype.getSprite = function() {
 //  moveVertical - move on y axis (vertically)
 //////////////////////////////////////////////////////////////////////
 GamePiece.prototype.animate = function(dt, delta, duration, moveHorizontal, moveVertical) {
-	//@todo add an outer glow 
+	//@todo add an outer glow to the piece while animated
 	this.shakeTimer += dt;
 	if (this.shakeTimer > duration) {
 		if (!this.animationInitialized) {
@@ -380,7 +387,6 @@ GamePiece.prototype.animate = function(dt, delta, duration, moveHorizontal, move
 //
 // Represents the enemies our player must avoid.
 //////////////////////////////////////////////////////////////////////
-// @todo:  Make sure enemies move in sync.  Some enemies share the same square.
 var Enemy = function() {
     this.ENEMY_SPEED_THROTTLE = 60;
     this.ENEMY_SPEED_MINIMUM = 10;
@@ -442,7 +448,7 @@ Enemy.prototype.update = function(dt) {
     if (!this.hasCollided){
     	this.move(dt);
     } else {
-    	// we got a player so celebrate!
+    	// ran into a player, so celebrate a collision!
 		this.collisionAnimationTimer += dt;
 		// while timer is running, run animation or stop when timer expires.
 		if (this.collisionAnimationTimer < this.COLLISION_ANIMATION_DELAY) {
@@ -465,7 +471,7 @@ Enemy.prototype.render = function() {
 // The little guy running around in the arena!  
 // Runs accross the screen and has a scoreboard that it updates
 // when he/she makes it to the "water."  Animates when there
-// is a collision with any of the enemies or when a point is scored.
+// is a collision with any of the enemies or when the water is reached.
 //////////////////////////////////////////////////////////////////////
 var Player = function (){
     this.col = this.INIT_COL;
@@ -477,18 +483,19 @@ var Player = function (){
     this.sprite = PLAYER_DEFAULT_IMAGE;
     this.initAnimationState();
     this.hasCollided = false;
+    this.hasScored = false;
 };
 Player.prototype = Object.create(GamePiece.prototype);
 Player.prototype.constructor = Player;
 
 // INIT_COL:  Starting column for Player 
 Player.prototype.INIT_COL = (function(){
-    return 3;
+    return Math.round(NUM_COLS / 2);
 })();
 
 // INIT_ROW:  Starting row for Player 
 Player.prototype.INIT_ROW = (function(){
-    return 6;  
+    return NUM_ROWS;  
 })();
 
 Player.prototype.reset = function() {
@@ -502,6 +509,7 @@ Player.prototype.reset = function() {
     this.shakeTimer = 0;
     this.animationInitialized = false;
     this.animationShakeState = "left";
+    this.hasScored = false;
 };
 
 Player.prototype.animateCollision = function(dt) {
@@ -536,7 +544,7 @@ Player.prototype.collisionCheckLeft = function(enemy) {
 	// compare the left side of the player to the width of the enemy.
 	// account for a 2 pixel margin on the enemy image 
 	// account for a 10 pixel margin on the player images (blank space on left and right)
-	// @todo: how could I account for PNG image margins (blank space)dynamically?
+	// @todo: how could I account for PNG image margins (blank space) dynamically?
 	return (this.x + 10  > enemy.x + 2 && 
 	        this.x + 10  < enemy.x + enemy.getSprite().width - 2 ); 
 }
@@ -545,7 +553,7 @@ Player.prototype.collisionCheckRight = function(enemy) {
 	// compare the right side of the player to the width of the enemy.
 	// account for a 2 pixel margin on the enemy image 
 	// account for a 10 pixel margin on the player images (blank space on left and right)
-	// @todo: how could I account for PNG image margins (blank space)dynamically?
+	// @todo: how could I account for PNG image margins (blank space) dynamically?
 	return (this.x + this.getSprite().width - 10 > enemy.x + 2 &&
 	        this.x + this.getSprite().width - 10 < enemy.x + enemy.getSprite().width - 2);
 }
@@ -569,10 +577,9 @@ Player.prototype.scoreCheck = function(dt) {
 	 if (this.row === FIRST_ROW) {   
 	 	// The player has scored!  
 	    // CELEBRATE before moving to initial position
-	    // and update scoreboard by 1 point
-    	// only allow one score at a time, so wait for the scoreboard to be ready
-    	// if we didn't check the ready state, scoreboard would keep incrementing during celebration time.
-    	if (scoreboard.ready) { 
+	    // and update scoreboard by 1 point, but only once during the player's celebration.
+    	if (this.hasScored === false)	{  
+    		this.hasScored = true; 
     		scoreboard.increment(1);
     	}
     	// increment the elapsed time to the timer.
@@ -665,13 +672,10 @@ Player.prototype.handleInput = function(keyCode) {
 //////////////////////////////////////////////////////////////////////
 // Class:  Gem 
 // 
-// Parameter: color - possible values { orange, green, blue }
-//  
 // Object representing the a gem worth extra points if a player  
 // picks it up.
 //////////////////////////////////////////////////////////////////////
 var Gem = function() {
-	// var allowedTypes = [ "blue", "green", "orange" ];
 	this.row = this.randomRow();
 	this.col = this.randomCol();
 	// offsets to display the images in the center of the square
@@ -681,6 +685,7 @@ var Gem = function() {
     this._updateY(); 
     this.initAnimationState();
     this.isCollected = false;
+    this.countdownTimer = 12;  // this gem is displayed for 12 seconds.  default behavior.
 };
 Gem.prototype = Object.create(GamePiece.prototype);
 Gem.prototype.constructor = Gem;
@@ -712,16 +717,27 @@ Gem.prototype.update = function(dt) {
 		if (this.collisionAnimationTimer < this.COLLECTION_DELAY) {
 			this.animateScore(dt);
 		} else {
-			// remove this gem from the board.
-			for (var i = 0; i < gems.length; i++) {
-				if (this === gems[i]){
-					gems.splice(i, 1); // removes gem.
-					break;
-				}
-			}
+			this.remove();
 		}
-	} 
+	} else {
+		// Not collected yet. 
+		// so if this timer runs out take the gem off the board.
+		this.countdownTimer -= dt;
+		if (this.countdownTimer < 0) {
+			this.remove();
+		} 
+	}
 };
+
+Gem.prototype.remove = function(){
+	// remove this gem from the board.
+	for (var i = 0; i < gems.length; i++) {
+		if (this === gems[i]){
+			gems.splice(i, 1); // removes gem from array.
+			break;
+		}
+	}
+}
 
 Gem.prototype.animateScore = function(dt) {
 	// dt, delta, duration, moveHorizontal, moveVertical
@@ -740,6 +756,7 @@ var Emerald = function(){
 	Gem.call(this);
 	this.sprite = GEM_GREEN_IMAGE;
 	this.value = 2
+	this.countdownTimer = 7; 
 };
 Emerald.prototype = Object.create(Gem.prototype);
 Emerald.prototype.constructor = Emerald;
@@ -748,6 +765,7 @@ var Diamond = function(){
 	Gem.call(this);
 	this.sprite = GEM_ORANGE_IMAGE;
 	this.value = 5
+	this.countdownTimer = 5; 
 };
 Diamond.prototype = Object.create(Gem.prototype);
 Diamond.prototype.constructor = Diamond;
@@ -782,5 +800,5 @@ document.addEventListener('keyup', function(e) {
 // add a scoreboard to the screen
 var scoreboard = new Scoreboard();
 
-// cache for gems
+// cache for displayed gems, removed once collected by a player.
 var gems = [];

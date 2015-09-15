@@ -28,8 +28,8 @@ var Engine = (function(global) {
     //var canvaswidth = (function(){return 505;})(); 
     //var canvasheight = (function(){return 606;})();
 
-    canvas.width = 505;
-    canvas.height = 606;
+    canvas.width = NUM_COLS * OFFSET_X;
+    canvas.height = (NUM_ROWS) * OFFSET_Y + 108;  // 108px = extra grass at the bottom of the playing space.
     doc.body.appendChild(canvas);
 
     /* This function serves as the kickoff point for the game loop itself
@@ -122,8 +122,8 @@ var Engine = (function(global) {
                 'images/grass-block.png',   // Row 1 of 2 of grass
                 'images/grass-block.png'    // Row 2 of 2 of grass
             ],
-            numRows = 6,
-            numCols = 5,
+            numRows = NUM_ROWS,
+            numCols = NUM_COLS,
             row, col;
 
         /* Loop through the number of rows and columns we've defined above

@@ -153,7 +153,15 @@ var Engine = (function(global) {
      */
     function renderEntities() {
         
+        // showthe updated score
         scoreboard.render();
+
+        // place any gems on the board that have been created
+        // render first so that enemies and players go over gems.
+        gems.forEach(function(gem) {
+            gem.render();
+        });
+
         /* Loop through all of the objects within the allEnemies array and call
          * the render function you have defined.
          */

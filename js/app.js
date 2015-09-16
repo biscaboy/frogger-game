@@ -115,6 +115,8 @@ var Scoreboard = function() {
 	
 	// state properties
 	this.score = 0;
+	// @todo implement high score to track the highest score reached before losing points
+	this.highScore = 0;
 	// @todo currently not used could be useful for timestamps of events.
 	this.elapsedTime = 0;
 	
@@ -207,13 +209,6 @@ Scoreboard.prototype.render = function() {
 	ctx.fillText(this.score, this.position.x + this.dimension.width - 15, this.position.y + this.dimension.height - 15);
 	ctx.lineWidth = this.textborderwidth;
 	ctx.strokeText(this.score, this.position.x + this.dimension.width - 15, this.position.y + this.dimension.height - 15);
-
-	// display gems if any
-	if (gems.length > 0) {
-	    for (var i = 0; i < gems.length; i++){
-		    gems[i].render();
-	    }
-	}
 };
 
 Scoreboard.prototype.blinkScore = function(dt, color) {
@@ -273,12 +268,14 @@ GamePiece.prototype.initAnimationState = function() {
     this.collisionAnimationTimer = 0; // timer after collisions with enemy
     this.celebrationTimer = 0; // timer for when a Player scores
     this.shakeTimer = 0; // timer for animation on score/collision
+    this.blinkTimer = 0; // timer for blinking animations
     // indicates that animation has been called 
     // (if false first call being made
     // if true subsequent calls being made to animation)
     this.animationInitialized = false;
     // Keeps track of shaking state
     this.animationShakeState = "left";
+    this.visible = "true";
 }
 
 // CELEBRATION_DELAY:  how long to celebrate a score
@@ -380,6 +377,26 @@ GamePiece.prototype.animate = function(dt, delta, duration, moveHorizontal, move
 		this.shakeTimer = 0;
 	}
 
+};
+
+GamePiece.prototype.animateBlink = function(dt, duration) {
+	this.blinkTimer += dt;
+	if (this.blinkTimer > duration) {
+		if (!this.animationInitialized) {
+			// this is the first movement made for this animation.
+			// so center the shake (stays in the middle of the square)
+			this.visible = true;
+			this.animationInitialized = true;
+		}
+		if (this.visible === true) {
+			this.getSprite().src = "";
+			this.visible = false;
+		} else {
+			this.getSprite().src = this.sprite;
+			this.visible = true;
+		}
+		this.blinkTimer = 0;
+	}
 };
 
 //////////////////////////////////////////////////////////////////////
@@ -696,6 +713,11 @@ Gem.prototype.COLLECTION_DELAY = (function(){
     return 1;  
 })();
 
+// seconds to delay before making the gem disappear (no longer collectible).
+Gem.prototype.COUNTDOWN_DELAY = (function(){
+    return 4;  
+})();
+
 Gem.prototype.GEM_WIDTH = (function(){
 	return 75;
 })();
@@ -723,6 +745,14 @@ Gem.prototype.update = function(dt) {
 		// Not collected yet. 
 		// so if this timer runs out take the gem off the board.
 		this.countdownTimer -= dt;
+		if (this.countdownTimer < 2) {
+			this.collisionAnimationTimer += dt;
+			if (this.collisionAnimationTimer < this.COUNTDOWN_DELAY) {
+				this.animateCountdown(dt);
+			} else {
+				this.remove();
+			}
+		}
 		if (this.countdownTimer < 0) {
 			this.remove();
 		} 
@@ -743,6 +773,10 @@ Gem.prototype.animateScore = function(dt) {
 	// dt, delta, duration, moveHorizontal, moveVertical
 	this.animate(dt, 3, 0.1, true, true);
 };
+
+Gem.prototype.animateCountdown = function(dt) {
+	this.animateBlink(dt, 0.25);
+}
 
 var Saphire = function(){
 	Gem.call(this);

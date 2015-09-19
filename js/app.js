@@ -27,13 +27,14 @@ var OFFSET_Y = (function(){
 * TODO:  make it dynamic instead of static (maybe based on levels?)
 */
 var NUM_COLS = (function(){
-    return 7;
+    return 9;
 })();
 /**
 * @description Total number of rows in the playing space
+* TODO:  make it dynamic instead of static (maybe based on levels?)
 */
 var NUM_ROWS = (function(){
-    return 6;
+    return 8;
 })();
 /**
 * @description Number of the left most column in the playing space
@@ -54,6 +55,12 @@ var NUM_ROWS_OF_START_AREA = (function(){
     return 2;
 })();
 /**
+* @description Offset from the top of the playing area to the first row of path.
+*/
+var NUM_ROWS_PATH_OFFSET = (function(){
+    return 2;
+})();
+/**
 * @description Number of rows on which enemies walk.
 */
 var NUM_ROWS_OF_ENEMY_PATH = (function(){
@@ -64,8 +71,7 @@ var NUM_ROWS_OF_ENEMY_PATH = (function(){
 * TODO:  make it dynamic. (based on level?)
 */
 var NUM_ENEMIES = (function(){
-    // Having an enemy for each column makes the game too hard... so one less is fun.
-    return NUM_COLS - 1;
+    return Math.round((NUM_COLS * (1 / 3)) + (NUM_ROWS * (1 / 3)));
 })();
 var PLAYER_DEFAULT_IMAGE = (function(){
     return 'images/char-boy.png';
@@ -82,7 +88,15 @@ var GEM_GREEN_IMAGE = (function(){
 var GEM_ORANGE_IMAGE = (function(){
 	return 'images/Gem Orange.png';
 })();
-
+var STONE_IMAGE = (function(){
+	return 'images/stone-block.png';
+})();
+var WATER_IMAGE = (function(){
+	return 'images/water-block.png';
+})();
+var GRASS_IMAGE = (function(){
+	return 'images/grass-block.png';
+})();
 //////////////////////////////////////////////////////////////////////
 // Utility functions
 //////////////////////////////////////////////////////////////////////
@@ -234,7 +248,7 @@ Scoreboard.prototype.increment = function(value) {
 			// add a more valueable gem sometimes too.
 			if (this.score % 5 === 0) {
 				gems.push(new Emerald());
-			} else if (this.score % 13 === 0) {
+			} else if (this.score % 7 === 0) {
 				gems.push(new Diamond());
 			}
 		}
@@ -412,7 +426,7 @@ GamePiece.prototype._updateX = function() {
 };
 
 /**
-* @description update the y coordinate of the object based on its current row.
+* @description update the y coordinate of the object based on its current randomRow.
 */
 GamePiece.prototype._updateY = function() {
     // subtract 1 to make code more readable (row values start at 1 instead of 0)
@@ -446,8 +460,8 @@ GamePiece.prototype._decrementCol = function() {
 * (i.e. possible values returned represent the row numbers of the the stone walkway.)
 */
 GamePiece.prototype.randomRow = function() {
-	// ex. floor of Math.random() * 3 returns (0, 1, 2) then offset by start area to match location of the 'road'
-    return Math.floor((Math.random() * NUM_ROWS_OF_ENEMY_PATH) + NUM_ROWS_OF_START_AREA);
+	// ex. floor of Math.random() * 3 returns (0, 1, 2) then offset by offset to match location of the 'road'
+    return Math.floor((Math.random() * NUM_ROWS_OF_ENEMY_PATH) + NUM_ROWS_PATH_OFFSET);
 };
 
 /**
@@ -548,7 +562,7 @@ GamePiece.prototype.animateBlink = function(dt, duration) {
 * @constructor
 */
 var Enemy = function() {
-    this.ENEMY_SPEED_THROTTLE = 60;
+    this.ENEMY_SPEED_THROTTLE = 40;
     this.ENEMY_SPEED_MINIMUM = 10;
     this.xOffset = 0;
     this.yOffset = 20;
@@ -703,8 +717,8 @@ Player.prototype.reset = function() {
 
 
 Player.prototype.animateCollision = function(dt) {
-	//this.animate(dt, 20, 0.15, true, false);
-	this.animateBlink(dt, 0.15);
+	this.animate(dt, 20, 0.15, true, false);
+	//this.animateBlink(dt, 0.15);
 };
 
 Player.prototype.animateScore = function(dt) {
@@ -963,7 +977,7 @@ Gem.prototype.COLLECTION_DELAY = (function(){
 
 // seconds
 Gem.prototype.DEFAULT_DISPLAY_TIME = (function(){
-    return 12;
+    return 15;
 })();
 
 // the amount of time to make the gem blink before it disappears (no longer collectible).
@@ -985,8 +999,7 @@ Gem.prototype.render = function() {
 
 Gem.prototype.update = function(dt) {
    	if (this.isCollected) {
-   		this.countdownTimer = 99;
-   		// player is in an animation so increment the elapsed time to the timer
+   		// animate gem so increment the elapsed time to the timer
 		this.animationTimer += dt;
 		// while timer is running, run animation or stop when timer expires.
 		if (this.animationTimer < this.COLLECTION_DELAY) {
@@ -1057,10 +1070,23 @@ var Emerald = function(){
 	this.sprite = GEM_GREEN_IMAGE;
 	this.img.src = this.sprite;
 	this.value = 3;
-	this.countdownTimer = 9;
+	this.countdownTimer = 10;
 };
 Emerald.prototype = Object.create(Gem.prototype);
 Emerald.prototype.constructor = Emerald;
+
+/**
+* @description Overrides parent method to place Emeralds only in the top 3 rows.
+*/
+Emerald.prototype.randomRow = function() {
+	var row;
+	if (NUM_ROWS_OF_ENEMY_PATH > 3) {
+		row = Math.floor(Math.random() * 3) + NUM_ROWS_PATH_OFFSET;
+	} else {
+		row = Gem.prototype.randomRow.call();
+	}
+	return row;
+};
 
 /**
 * @description Represents a Diamond the most valuable of the Gems
@@ -1072,11 +1098,23 @@ var Diamond = function(){
 	this.sprite = GEM_ORANGE_IMAGE;
 	this.img.src = this.sprite;
 	this.value = 10;
-	this.countdownTimer = 6;
+	this.countdownTimer = 8;
 };
 Diamond.prototype = Object.create(Gem.prototype);
 Diamond.prototype.constructor = Diamond;
 
+/**
+* @description Overrides parent method to place Diamonds only in the top 2 rows.
+*/
+Diamond.prototype.randomRow = function() {
+	var row;
+	if (NUM_ROWS_OF_ENEMY_PATH > 2) {
+		row = Math.floor(Math.random() * 2) + NUM_ROWS_PATH_OFFSET;
+	} else {
+		row = Gem.prototype.randomRow.call();
+	}
+	return row;
+};
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies

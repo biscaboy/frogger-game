@@ -114,17 +114,20 @@ var Engine = (function(global) {
         /* This array holds the relative URL to the image used
          * for that particular row of the game level.
          */
-        var rowImages = [
-                'images/water-block.png',   // Top row is water
-                'images/stone-block.png',   // Row 1 of 3 of stone
-                'images/stone-block.png',   // Row 2 of 3 of stone
-                'images/stone-block.png',   // Row 3 of 3 of stone
-                'images/grass-block.png',   // Row 1 of 2 of grass
-                'images/grass-block.png'    // Row 2 of 2 of grass
-            ],
-            numRows = NUM_ROWS,
+        var rowImages = [];
+
+        var numRows = NUM_ROWS,
             numCols = NUM_COLS,
             row, col;
+
+        // set up the row array with images based on game attributes
+        rowImages.push(WATER_IMAGE);   // Top row is water
+        for (var i = 0; i < NUM_ROWS_OF_ENEMY_PATH; i++) {
+            rowImages.push(STONE_IMAGE); // Rows of stones
+        }
+        for (var i = 0; i < NUM_ROWS_OF_START_AREA; i++) {
+            rowImages.push(GRASS_IMAGE);   // Rows grass
+        }
 
         /* Loop through the number of rows and columns we've defined above
          * and, using the rowImages array, draw the correct image for that
@@ -186,14 +189,14 @@ var Engine = (function(global) {
      * all of these images are properly loaded our game will start.
      */
     Resources.load([
-        'images/stone-block.png',
-        'images/water-block.png',
-        'images/grass-block.png',
-        'images/enemy-bug.png',
-        'images/char-boy.png',
-        'images/Gem Blue.png',
-        'images/Gem Green.png',
-        'images/Gem Orange.png'
+        STONE_IMAGE,
+        WATER_IMAGE,
+        GRASS_IMAGE,
+        ENEMY_DEFAULT_IMAGE,
+        PLAYER_DEFAULT_IMAGE,
+        GEM_BLUE_IMAGE,
+        GEM_GREEN_IMAGE,
+        GEM_ORANGE_IMAGE
     ]);
     Resources.onReady(init);
 

@@ -1,5 +1,5 @@
 /*
- app.js - Frogger Game Implementation 
+ app.js - Frogger Game Implementation
  Author:  David Dickinson from provided script by Udacity Instructors
 */
 /*
@@ -19,14 +19,14 @@ var OFFSET_X = (function(){
 var OFFSET_Y = (function(){
     return 83;
 })();
-// @todo:  make it dynamic instead of static (maybe based on levels?)
+// TODO:  make it dynamic instead of static (maybe based on levels?)
 // NUM_COLS:  Total number of columns in the playing space
 var NUM_COLS = (function(){
-    return 7;  
+    return 7;
 })();
-// NUM_ROWS:  Total number of rows in the playing space  
+// NUM_ROWS:  Total number of rows in the playing space
 var NUM_ROWS = (function(){
-    return 6;  
+    return 6;
 })();
 // FIRST_COL: Number of the left most column in the playing space
 var FIRST_COL = (function(){
@@ -34,21 +34,21 @@ var FIRST_COL = (function(){
 })();
 // FIRST_ROW:  Number of the top row in the playing space
 var FIRST_ROW = (function(){
-    return 1; 
+    return 1;
 })();
-// @todo:  make it dynamic. (based on level?)
+// TODO:  make it dynamic. (based on level?)
 // NUM_ENEMIES:  The starting number of enemies to render in the game.
 // Having an enemy for each column makes the game too hard... so one less is fun.
 var NUM_ENEMIES = (function(){
     return NUM_COLS - 1;
 })();
-// @todo: add a sprite selector.
+// TODO: add a sprite selector.
 // Images for the game players, gems and enemies.
 var PLAYER_DEFAULT_IMAGE = (function(){
-    return 'images/char-boy.png'; 
+    return 'images/char-boy.png';
 })();
 var ENEMY_DEFAULT_IMAGE = (function(){
-    return 'images/enemy-bug.png'; 
+    return 'images/enemy-bug.png';
 })();
 var GEM_BLUE_IMAGE = (function(){
 	return 'images/Gem Blue.png';
@@ -67,17 +67,17 @@ function strokeRoundedRect(color, x, y, width, height, radius){
 	_roundedRect (x,y,width,height,radius);
 	ctx.strokeStyle = color;
   	ctx.stroke();
-};
+}
 
 function fillRoundedRect(color, x, y, width, height, radius){
 	_roundedRect (x,y,width,height,radius);
 	ctx.fillStyle = color;
   	ctx.fill();
-};
+}
 
 // A utility function to draw a rectangle with rounded corners.
 // Source:  https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Drawing_shapes
-function _roundedRect (x, y, width, height, radius){
+function _roundedRect(x, y, width, height, radius){
   ctx.beginPath();
   ctx.moveTo(x,y+radius);
   ctx.lineTo(x,y+height-radius);
@@ -88,15 +88,26 @@ function _roundedRect (x, y, width, height, radius){
   ctx.quadraticCurveTo(x+width,y,x+width-radius,y);
   ctx.lineTo(x+radius,y);
   ctx.quadraticCurveTo(x,y,x,y+radius);
-};
+}
+
+function compareFilenames(filename1, filename2) {
+	return (_getFilenameNoPath(filename1) === _getFilenameNoPath(filename2)) ? true : false;
+}
+
+// returns just the filename of the given string striping the file path.
+// source http://stackoverflow.com/questions/423376/how-to-get-the-file-name-from-a-full-path-using-javascript
+function _getFilenameNoPath(name) {
+	// the resource loader encodes the filenames so decode them for comparisons
+	return decodeURIComponent(name.split('\\').pop().split('/').pop());
+}
 
 //////////////////////////////////////////////////////////////////////
-// Class:  Scoreboard 
-//  
-// Object representing the scoreboard where the player's score is 
+// Class:  Scoreboard
+//
+// Object representing the scoreboard where the player's score is
 // displayed.
 //
-// A score board also adds Gems to the fieldf as the player's 
+// A score board also adds Gems to the field as the player's
 // score goes higher.
 //////////////////////////////////////////////////////////////////////
 var Scoreboard = function() {
@@ -104,22 +115,22 @@ var Scoreboard = function() {
 	this.position = { x: (NUM_COLS - 1) * OFFSET_X, y: 0 };
 	this.textposition = { x: 50, y: 50 };
 	this.dimension = { height: 50, width: OFFSET_X };
-	this.bgcolor = "#000";
+	this.bgcolor = '#000';
 	this.borderwidth = 3;
-	this.bordercolor = "#fff";
-	this.textcolor = "#fff";
-	this.textbordercolor = "#fff";
+	this.bordercolor = '#fff';
+	this.textcolor = '#fff';
+	this.textbordercolor = '#fff';
 	this.textborderwidth = 1;
 	this.cornerradius = 15;
 	this.textsize = 18;
-	
+
 	// state properties
 	this.score = 0;
-	// @todo implement high score to track the highest score reached before losing points
+	// tracks the highest score reached during this game
 	this.highScore = 0;
-	// @todo currently not used could be useful for timestamps of events.
+	// running time of the game, useful for timestamps of events.
 	this.elapsedTime = 0;
-	
+
 	// animation properties - the score blinks when points are earned.
 	this.isVisible = true;
 	this.blinkTimer = 0;
@@ -133,25 +144,30 @@ var Scoreboard = function() {
 // CELEBRATION_DELAY:  how long to celebrate a score
 // seconds to delay before resetting player to starting position.
 Scoreboard.prototype.CELEBRATION_DELAY = (function(){
-    return 2;  
+    return 2;
 })();
 
 Scoreboard.prototype.getElapsedTime = function() {
 	return this.elapsedTime;
-}
+};
 
 Scoreboard.prototype.increment = function(value) {
 	this.score += value;
 	this.animateScore = true;
 	this.animationTimer = 0;
-	// @todo make sure there is only one gem in a square.
+	// TODO: make sure there is only one gem in a square.
+	// don't allow a gem to show up if the highscore is not reached.
+	//   this means that if the player lost points they won't get another gem.
 	// add a new gem to the game if the score is high enough
-	if (this.score % 3 == 0) {
-		gems.push(new Saphire()); 
-	} else if (this.score % 7 == 0) {
-		gems.push(new Emerald()); 
-	} else if (this.score % 13 == 0) {
-		gems.push(new Diamond()); 
+	if (this.score > this.highScore){
+		this.highScore = this.score;
+		if (this.score % 3 === 0) {
+			gems.push(new Saphire());
+		} else if (this.score % 7 === 0) {
+			gems.push(new Emerald());
+		} else if (this.score % 13 === 0) {
+			gems.push(new Diamond());
+		}
 	}
 };
 
@@ -165,11 +181,11 @@ Scoreboard.prototype.decrement = function(value) {
 	this.animationTimer = 0;
 };
 
-// @todo:  if you clear a level then reset to 0
+// TODO:  if you clear a level then reset to 0
 Scoreboard.prototype.reset = function(){
 	this.isVisible = true;
-	this.textcolor = "#fff";
-	this.textbordercolor = "#fff";
+	this.textcolor = '#fff';
+	this.textbordercolor = '#fff';
 	this.animationInitialized = false;
 	this.animationTimer = 0;
 	this.animateScore = false;
@@ -180,28 +196,28 @@ Scoreboard.prototype.render = function() {
 	// create the scoreboard background
 	ctx.fillStyle = this.bgcolor;
 	fillRoundedRect(this.bgcolor,
-		this.position.x + this.borderwidth/2, 
-		this.position.y + this.borderwidth/2, 
-		this.dimension.width - this.borderwidth, 
+		this.position.x + this.borderwidth/2,
+		this.position.y + this.borderwidth/2,
+		this.dimension.width - this.borderwidth,
 		this.dimension.height - this.borderwidth,
-		this.cornerradius); // 
+		this.cornerradius);
 	ctx.strokeStyle = this.bordercolor;
 	ctx.lineWidth = this.borderwidth;
 	strokeRoundedRect(this.bordercolor,
-		this.position.x + this.borderwidth/2, 
-		this.position.y + this.borderwidth/2, 
-		this.dimension.width - this.borderwidth, 
+		this.position.x + this.borderwidth/2,
+		this.position.y + this.borderwidth/2,
+		this.dimension.width - this.borderwidth,
 		this.dimension.height - this.borderwidth,
-		this.cornerradius); // 
+		this.cornerradius);
 
 	// write the score
-	ctx.font = this.textsize + "pt Arial";
-	ctx.textAlign = "right";
+	ctx.font = this.textsize + 'pt Arial';
+	ctx.textAlign = 'right';
 
 	if (this.isVisible) {
 		ctx.fillStyle = this.textcolor;
 		ctx.strokeStyle = this.textbordercolor;
-	} else { 
+	} else {
 		ctx.fillStyle = this.bgcolor;
 		ctx.strokeStyle = this.bgcolor;
 	}
@@ -226,7 +242,7 @@ Scoreboard.prototype.animate = function(dt, duration, color) {
 		if (this.isVisible) {
 			this.isVisible = false;
 		} else {
-			this.textcolor = color; 
+			this.textcolor = color;
 			this.textbordercolor = color;
 			this.isVisible = true;
 		}
@@ -237,24 +253,23 @@ Scoreboard.prototype.animate = function(dt, duration, color) {
 Scoreboard.prototype.update = function(dt) {
 	// keeping track of how long we have played.
 	this.elapsedTime += dt;
-	
+
 	// has there been a collision or a score??
 	if (this.animateScore || this.animateCollision ) {
 		    	// increment the elapsed time to the timer.
         this.animationTimer += dt;
-        var color = "#00ff00";
+        var color = '#00ff00';
         if (this.animateCollision) {
-        	color = "#ff0000";
-        } 
+        	color = '#ff0000';
+        }
         this.blinkScore(dt, color);
-        
+
         // wait for timer to go off and then reset the animation
         if (this.animationTimer > this.CELEBRATION_DELAY) {
             this.reset();
         }
 	}
-
-}
+};
 
 //////////////////////////////////////////////////////////////////////
 // Class:  GamePiece
@@ -265,29 +280,28 @@ var GamePiece = function() {};
 
 GamePiece.prototype.initAnimationState = function() {
 	// timers allow animation for a certain period of time.
-    this.collisionAnimationTimer = 0; // timer after collisions with enemy
-    this.celebrationTimer = 0; // timer for when a Player scores
-    this.shakeTimer = 0; // timer for animation on score/collision
-    this.blinkTimer = 0; // timer for blinking animations
-    // indicates that animation has been called 
-    // (if false first call being made
-    // if true subsequent calls being made to animation)
+    this.animationTimer = 0;
+    this.celebrationTimer = 0;
+    // timer for delays between shaking moves
+    this.shakeTimer = 0;
+    // timer for delays between blinks
+    this.blinkTimer = 0;
+    // indicates that animation has been called
     this.animationInitialized = false;
     // Keeps track of shaking state
-    this.animationShakeState = "left";
-    this.visible = "true";
-}
+    this.animationShakeState = 'left';
+};
 
 // CELEBRATION_DELAY:  how long to celebrate a score
 // seconds to delay before resetting piece to starting position.
 GamePiece.prototype.CELEBRATION_DELAY = (function(){
-    return 2;  
+    return 2;
 })();
 
 // COLLISION_ANIMATION_DELAY:  how long to animate a collision
 // seconds to delay before resetting piece to starting position.
 GamePiece.prototype.COLLISION_ANIMATION_DELAY = (function(){
-    return 1.5;  
+    return 1.5;
 })();
 
 // functions _updateX and _updateY
@@ -300,7 +314,7 @@ GamePiece.prototype._updateX = function() {
 };
 
 GamePiece.prototype._updateY = function() {
-    this.y = (this.row -1) * OFFSET_Y - this.yOffset; 
+    this.y = (this.row -1) * OFFSET_Y - this.yOffset;
 };
 
 GamePiece.prototype._incrementRow = function() {
@@ -324,12 +338,12 @@ GamePiece.prototype._decrementCol = function() {
 };
 
 // ... functions randomRow and random column return integers representing
-// a row or colunm number selected randomly  
+// a row or colunm number selected randomly
 //
 // Returns a random postive integer representing a row where enemies walk
 // possible values returned: (2, 3, 4) to represent the stone walkway.
 GamePiece.prototype.randomRow = function() {
-	// floor of Math.random() * 3 returns (0, 1, 2) then add 2 to match the "road"
+	// floor of Math.random() * 3 returns (0, 1, 2) then add 2 to match the 'road'
     return Math.floor((Math.random() * 3) + 2);
 };
 
@@ -337,19 +351,35 @@ GamePiece.prototype.randomRow = function() {
 // possible values returned:  (1, 2, 3, 4, 5)
 GamePiece.prototype.randomCol = function() {
     // floor of Math.random() * 3 returns (0, 1, 2, 3, 4) then offset by 1
-    return Math.floor(Math.random() * 5) + 1; 
+    return Math.floor(Math.random() * 5) + 1;
 };
 
-GamePiece.prototype.getSprite = function() {
+GamePiece.prototype.getSpriteImg = function() {
 	return Resources.get(this.sprite);
+};
+
+GamePiece.prototype.hideSpriteImg = function() {
+	this.getSpriteImg().src = '';
+};
+
+GamePiece.prototype.showSpriteImg = function() {
+	// be sure the sprite is hidden before showing it again
+	// because reassigning the image is expensive and slows the game.
+	if (!this.isSpriteImgVisible()) {
+		this.getSpriteImg().src = this.sprite;
+	}
+};
+
+GamePiece.prototype.isSpriteImgVisible = function() {
+	return compareFilenames(this.getSpriteImg().src, this.sprite);
 };
 
 //////////////////////////////////////////////////////////////////////
 // Method:  animate
-//	
+//
 //  Shakes the piece back and forth to show dread or excitement.
 //
-// Parameters: 
+// Parameters:
 // 	dt - delta of the time since last frame
 //  delta - distance to move piece in animation.
 //  duration - how long to wait between shake movements
@@ -357,23 +387,28 @@ GamePiece.prototype.getSprite = function() {
 //  moveVertical - move on y axis (vertically)
 //////////////////////////////////////////////////////////////////////
 GamePiece.prototype.animate = function(dt, delta, duration, moveHorizontal, moveVertical) {
-	//@todo add an outer glow to the piece while animated
+	// TODO: add an outer glow to the piece while animated
 	this.shakeTimer += dt;
 	if (this.shakeTimer > duration) {
+		this.showSpriteImg();  // other animations hide the sprite, so be sure we see it shake.
 		if (!this.animationInitialized) {
 			// this is the first movement made for this animation.
-			// so center the shake (stays in the middle of the square)
-			delta = delta / 2;  
+			// so center the shake to the middle of the square
+			delta = delta / 2;
 			this.animationInitialized = true;
 		}
-		if (this.animationShakeState == "left") {
+		if (this.animationShakeState === 'left') {
 			delta = (delta * -1);
-			this.animationShakeState = "right";
+			this.animationShakeState = 'right';
 		} else {
-			this.animationShakeState = "left";
+			this.animationShakeState = 'left';
 		}
-		if (moveHorizontal){ this.x += delta; }
-		if (moveVertical){ this.y += delta; }
+		if (moveHorizontal){
+			this.x += delta;
+		}
+		if (moveVertical){
+			this.y += delta;
+		}
 		this.shakeTimer = 0;
 	}
 
@@ -384,16 +419,12 @@ GamePiece.prototype.animateBlink = function(dt, duration) {
 	if (this.blinkTimer > duration) {
 		if (!this.animationInitialized) {
 			// this is the first movement made for this animation.
-			// so center the shake (stays in the middle of the square)
-			this.visible = true;
 			this.animationInitialized = true;
 		}
-		if (this.visible === true) {
-			this.getSprite().src = "";
-			this.visible = false;
+		if (this.isSpriteImgVisible()) {
+			this.hideSpriteImg();
 		} else {
-			this.getSprite().src = this.sprite;
-			this.visible = true;
+			this.showSpriteImg();
 		}
 		this.blinkTimer = 0;
 	}
@@ -415,7 +446,7 @@ var Enemy = function() {
     this._updateY();
     this.setSpeed();
     this.hasCollided = false;
-    
+
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
     this.sprite = ENEMY_DEFAULT_IMAGE;
@@ -424,13 +455,18 @@ var Enemy = function() {
 Enemy.prototype = Object.create(GamePiece.prototype);
 Enemy.prototype.constructor = Enemy;
 
+// TODO:  Rewrite to recurse until good speed found.
 Enemy.prototype.setSpeed = function() {
+	this.speed = this._setSpeed();
+};
+
+Enemy.prototype._setSpeed = function() {
 	var speed = Math.floor(Math.random() * this.ENEMY_SPEED_THROTTLE);
-	
+
 	if (speed < this.ENEMY_SPEED_MINIMUM) {
-		speed = this.ENEMY_SPEED_MINIMUM;
+		speed = this._setSpeed;
 	}
-	this.speed = speed * 10;
+	return speed * 10;
 };
 
 Enemy.prototype.move = function(dt) {
@@ -466,9 +502,9 @@ Enemy.prototype.update = function(dt) {
     	this.move(dt);
     } else {
     	// ran into a player, so celebrate a collision!
-		this.collisionAnimationTimer += dt;
+		this.animationTimer += dt;
 		// while timer is running, run animation or stop when timer expires.
-		if (this.collisionAnimationTimer < this.COLLISION_ANIMATION_DELAY) {
+		if (this.animationTimer < this.COLLISION_ANIMATION_DELAY) {
 			this.animateCollision(dt);
 		} else {
 			this.initAnimationState();
@@ -485,9 +521,9 @@ Enemy.prototype.render = function() {
 //////////////////////////////////////////////////////////////////////
 // Class:  Player
 //
-// The little guy running around in the arena!  
+// The little guy running around in the arena!
 // Runs accross the screen and has a scoreboard that it updates
-// when he/she makes it to the "water."  Animates when there
+// when he/she makes it to the 'water.'  Animates when there
 // is a collision with any of the enemies or when the water is reached.
 //////////////////////////////////////////////////////////////////////
 var Player = function (){
@@ -496,7 +532,7 @@ var Player = function (){
     this.xOffset = 0;
     this.yOffset = 10;
     this._updateX();
-    this._updateY(); 
+    this._updateY();
     this.sprite = PLAYER_DEFAULT_IMAGE;
     this.initAnimationState();
     this.hasCollided = false;
@@ -505,32 +541,34 @@ var Player = function (){
 Player.prototype = Object.create(GamePiece.prototype);
 Player.prototype.constructor = Player;
 
-// INIT_COL:  Starting column for Player 
+// INIT_COL:  Starting column for Player
 Player.prototype.INIT_COL = (function(){
     return Math.round(NUM_COLS / 2);
 })();
 
-// INIT_ROW:  Starting row for Player 
+// INIT_ROW:  Starting row for Player
 Player.prototype.INIT_ROW = (function(){
-    return NUM_ROWS;  
+    return NUM_ROWS;
 })();
 
 Player.prototype.reset = function() {
     this.col = this.INIT_COL;
     this.row = this.INIT_ROW;
     this._updateX();
-    this._updateY(); 
+    this._updateY();
     this.hasCollided = false;
-    this.collisionAnimationTimer = 0;
-    this.celebrationTimer = 0; 
+    this.animationTimer = 0;
+    this.celebrationTimer = 0;
     this.shakeTimer = 0;
     this.animationInitialized = false;
-    this.animationShakeState = "left";
+    this.animationShakeState = 'left';
     this.hasScored = false;
+    this.showSpriteImg();
 };
 
 Player.prototype.animateCollision = function(dt) {
-	this.animate(dt, 20, 0.15, true, false);
+	//this.animate(dt, 20, 0.15, true, false);
+	this.animateBlink(dt, 0.15);
 };
 
 Player.prototype.animateScore = function(dt) {
@@ -541,10 +579,10 @@ Player.prototype.collisionCheck = function() {
 	// only check if this player hasn't already collieded with an enemy.
 	if (!this.hasCollided) {
 		for (var i = 0; i < allEnemies.length; i++) {
-			// check if the edges of the player are touching an enemy 
+			// check if the edges of the player are touching an enemy
 			// or if the player is in the same row.
-	        if ((this.collisionCheckLeft(allEnemies[i]) || 
-	        	 this.collisionCheckRight(allEnemies[i])) &&
+	        if ((this.collisionCheckLeft(allEnemies[i]) ||
+	        	this.collisionCheckRight(allEnemies[i])) &&
 	            this.row === allEnemies[i].row ) {
 	            //collision! Player loses a point!
 	            scoreboard.decrement(1);
@@ -555,25 +593,25 @@ Player.prototype.collisionCheck = function() {
 	        }
 	    }
 	}
-}
+};
 
 Player.prototype.collisionCheckLeft = function(enemy) {
 	// compare the left side of the player to the width of the enemy.
-	// account for a 2 pixel margin on the enemy image 
+	// account for a 2 pixel margin on the enemy image
 	// account for a 10 pixel margin on the player images (blank space on left and right)
-	// @todo: how could I account for PNG image margins (blank space) dynamically?
-	return (this.x + 10  > enemy.x + 2 && 
-	        this.x + 10  < enemy.x + enemy.getSprite().width - 2 ); 
-}
+	// TODO: how could I account for PNG image margins (blank space) dynamically?
+	return (this.x + 10  > enemy.x + 2 &&
+	        this.x + 10  < enemy.x + enemy.getSpriteImg().width - 2 );
+};
 
 Player.prototype.collisionCheckRight = function(enemy) {
 	// compare the right side of the player to the width of the enemy.
-	// account for a 2 pixel margin on the enemy image 
+	// account for a 2 pixel margin on the enemy image
 	// account for a 10 pixel margin on the player images (blank space on left and right)
-	// @todo: how could I account for PNG image margins (blank space) dynamically?
-	return (this.x + this.getSprite().width - 10 > enemy.x + 2 &&
-	        this.x + this.getSprite().width - 10 < enemy.x + enemy.getSprite().width - 2);
-}
+	// TODO: how could I account for PNG image margins (blank space) dynamically?
+	return (this.x + this.getSpriteImg().width - 10 > enemy.x + 2 &&
+	        this.x + this.getSpriteImg().width - 10 < enemy.x + enemy.getSpriteImg().width - 2);
+};
 
 Player.prototype.collectGems = function(){
 	// if in a collision situation do not check for gems.
@@ -588,15 +626,15 @@ Player.prototype.collectGems = function(){
     		}
     	}
     }
-}
+};
 
 Player.prototype.scoreCheck = function(dt) {
-	 if (this.row === FIRST_ROW) {   
-	 	// The player has scored!  
+	 if (this.row === FIRST_ROW) {
+	 	// The player has scored!
 	    // CELEBRATE before moving to initial position
 	    // and update scoreboard by 1 point, but only once during the player's celebration.
-    	if (this.hasScored === false)	{  
-    		this.hasScored = true; 
+    	if (this.hasScored === false)	{
+    		this.hasScored = true;
     		scoreboard.increment(1);
     	}
     	// increment the elapsed time to the timer.
@@ -607,7 +645,7 @@ Player.prototype.scoreCheck = function(dt) {
             this.reset();
         }
     }
-}
+};
 
 Player.prototype.update = function(dt) {
     // see if player is in the top row (score!)
@@ -615,9 +653,9 @@ Player.prototype.update = function(dt) {
    	// is the player in a collision animaiton?
    	if (this.hasCollided) {
 		// player is in an animation so increment the elapsed time to the timer
-		this.collisionAnimationTimer += dt;
+		this.animationTimer += dt;
 		// while timer is running, run animation or stop when timer expires.
-		if (this.collisionAnimationTimer < this.COLLISION_ANIMATION_DELAY) {
+		if (this.animationTimer < this.COLLISION_ANIMATION_DELAY) {
 			this.animateCollision(dt);
 		} else {
 			this.reset();
@@ -640,13 +678,13 @@ Player.prototype.moveUp = function() {
         this.row != FIRST_ROW &&
         !this.hasCollided) {
         this._decrementRow();
-    }   
+    }
 };
 
 Player.prototype.moveDown = function() {
-    if (this.row < NUM_ROWS && 
+    if (this.row < NUM_ROWS &&
         this.row != FIRST_ROW &&
-        !this.hasCollided) { 
+        !this.hasCollided) {
         this._incrementRow();
     }
 };
@@ -656,66 +694,117 @@ Player.prototype.moveLeft = function() {
         this.row != FIRST_ROW &&
         !this.hasCollided) {
         this._decrementCol();
-    } 
+    }
 };
 
 Player.prototype.moveRight = function() {
     if (this.col < NUM_COLS  &&
         this.row != FIRST_ROW &&
-        !this.hasCollided) {   
+        !this.hasCollided) {
         this._incrementCol();
-    } 
+    }
 };
 
 Player.prototype.handleInput = function(keyCode) {
     // determine what key has been pushed
-    // move to the next square 
+    // move to the next square
     switch(keyCode) {
-        case "left": 
+        case 'left':
             this.moveLeft();
             break;
-        case "up": 
+        case 'up':
             this.moveUp();
             break;
-        case "right":
+        case 'right':
             this.moveRight();
             break;
-        case "down": 
+        case 'down':
             this.moveDown();
             break;
     }
 };
 
 //////////////////////////////////////////////////////////////////////
-// Class:  Gem 
-// 
-// Object representing the a gem worth extra points if a player  
+// Class:  Gem
+//
+// Object representing the a gem worth extra points if a player
 // picks it up.
 //////////////////////////////////////////////////////////////////////
 var Gem = function() {
-	this.row = this.randomRow();
-	this.col = this.randomCol();
+	this.id = scoreboard.getElapsedTime();
+	this.setUniqueLocation(gems);
 	// offsets to display the images in the center of the square
     this.xOffset = (OFFSET_X - this.GEM_WIDTH) / 2;
     this.yOffset = -50;
 	this._updateX();
-    this._updateY(); 
+    this._updateY();
     this.initAnimationState();
     this.isCollected = false;
-    this.countdownTimer = 12;  // this gem is displayed for 12 seconds.  default behavior.
+    this.countdownTimer = this.DEFAULT_DISPLAY_TIME;
+	// Since there may be multiple gems on the board, each
+	// gem needs it's own copy of the sprite image.
+	this.img = new Image();   // Create new img element
 };
 Gem.prototype = Object.create(GamePiece.prototype);
 Gem.prototype.constructor = Gem;
 
+/** Override parent method to handle a Gem's local image
+*/
+Gem.prototype.getSpriteImg = function() {
+	return this.img;
+};
+
+/** Override parent method to handle a Gem's local image
+*/
+Gem.prototype.hideSpriteImg = function() {
+	this.img.src = '';
+};
+
+/** Override parent method to handle a Gem's local image
+*/
+Gem.prototype.showSpriteImg = function() {
+	// be sure the sprite is hidden before showing it again
+	// because reassigning the image is expensive and slows the game.
+	if (!this.isSpriteImgVisible()) {
+		this.img.src = this.sprite;
+	}
+};
+
+/** Override parent method to handle a Gem's local image
+*/
+Gem.prototype.isSpriteImgVisible = function() {
+	return compareFilenames(this.img.src, this.sprite);
+};
+
+/** Override parent method to handle a Gem's local image
+*   The resources cache cannot be used for gems because the
+*/
+Gem.prototype.setUniqueLocation = function(gems) {
+	this.row = this.randomRow();
+	this.col = this.randomCol();
+
+	for (var i = 0; i < gems.length; i++){
+		if (gems[i].row === this.row &&
+			gems[i].col === this.col) {
+			// duplicate location, try again.
+			this.setUniqueLocation(gems);
+		}
+	}
+};
 // COLLECTION:  how long to celebrate a score
 // seconds to delay before resetting player to starting position.
 Gem.prototype.COLLECTION_DELAY = (function(){
-    return 1;  
+    return 1;
 })();
 
-// seconds to delay before making the gem disappear (no longer collectible).
-Gem.prototype.COUNTDOWN_DELAY = (function(){
-    return 4;  
+// seconds
+Gem.prototype.DEFAULT_DISPLAY_TIME = (function(){
+    return 12;
+})();
+
+// the amount of time to make the gem blink before it disappears (no longer collectible).
+Gem.prototype.FINAL_COUNTDOWN_DELAY = (function(){
+    return 4;
 })();
 
 Gem.prototype.GEM_WIDTH = (function(){
@@ -728,46 +817,41 @@ Gem.prototype.GEM_HEIGHT = (function(){
 
 // Draw the Gem on the screen
 Gem.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y, this.GEM_WIDTH, this.GEM_HEIGHT);
+    ctx.drawImage(this.img, this.x, this.y, this.GEM_WIDTH, this.GEM_HEIGHT);
 };
 
 Gem.prototype.update = function(dt) {
    	if (this.isCollected) {
-		// player is in an animation so increment the elapsed time to the timer
-		this.collisionAnimationTimer += dt;
+   		// player is in an animation so increment the elapsed time to the timer
+		this.animationTimer += dt;
 		// while timer is running, run animation or stop when timer expires.
-		if (this.collisionAnimationTimer < this.COLLECTION_DELAY) {
+		if (this.animationTimer < this.COLLECTION_DELAY) {
 			this.animateScore(dt);
 		} else {
 			this.remove();
 		}
 	} else {
-		// Not collected yet. 
+		// Not collected yet.
 		// so if this timer runs out take the gem off the board.
 		this.countdownTimer -= dt;
-		if (this.countdownTimer < 2) {
-			this.collisionAnimationTimer += dt;
-			if (this.collisionAnimationTimer < this.COUNTDOWN_DELAY) {
-				this.animateCountdown(dt);
-			} else {
-				this.remove();
-			}
+		if (this.countdownTimer < this.FINAL_COUNTDOWN_DELAY) {
+			this.animateCountdown(dt);
 		}
 		if (this.countdownTimer < 0) {
 			this.remove();
-		} 
+		}
 	}
 };
 
 Gem.prototype.remove = function(){
 	// remove this gem from the board.
 	for (var i = 0; i < gems.length; i++) {
-		if (this === gems[i]){
+		if (this.id === gems[i].id){
 			gems.splice(i, 1); // removes gem from array.
 			break;
 		}
 	}
-}
+};
 
 Gem.prototype.animateScore = function(dt) {
 	// dt, delta, duration, moveHorizontal, moveVertical
@@ -776,12 +860,13 @@ Gem.prototype.animateScore = function(dt) {
 
 Gem.prototype.animateCountdown = function(dt) {
 	this.animateBlink(dt, 0.25);
-}
+};
 
 var Saphire = function(){
 	Gem.call(this);
 	this.sprite = GEM_BLUE_IMAGE;
-	this.value = 1
+	this.img.src = this.sprite;
+	this.value = 1;
 };
 Saphire.prototype = Object.create(Gem.prototype);
 Saphire.prototype.constructor = Saphire;
@@ -789,8 +874,9 @@ Saphire.prototype.constructor = Saphire;
 var Emerald = function(){
 	Gem.call(this);
 	this.sprite = GEM_GREEN_IMAGE;
-	this.value = 2
-	this.countdownTimer = 7; 
+	this.img.src = this.sprite;
+	this.value = 3;
+	this.countdownTimer = 7;
 };
 Emerald.prototype = Object.create(Gem.prototype);
 Emerald.prototype.constructor = Emerald;
@@ -798,8 +884,9 @@ Emerald.prototype.constructor = Emerald;
 var Diamond = function(){
 	Gem.call(this);
 	this.sprite = GEM_ORANGE_IMAGE;
-	this.value = 5
-	this.countdownTimer = 5; 
+	this.img.src = this.sprite;
+	this.value = 10;
+	this.countdownTimer = 5;
 };
 Diamond.prototype = Object.create(Gem.prototype);
 Diamond.prototype.constructor = Diamond;
@@ -809,7 +896,7 @@ Diamond.prototype.constructor = Diamond;
 // Place all enemy objects in an array called allEnemies
 var allEnemies = (function() {
     var enemies = [];
-    for (i = 0; i < NUM_ENEMIES; i++) {
+    for (var i = 0; i < NUM_ENEMIES; i++) {
         enemies.push(new Enemy());
     }
     return enemies;

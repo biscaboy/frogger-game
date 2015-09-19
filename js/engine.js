@@ -25,7 +25,7 @@ var Engine = (function(global) {
         ctx = canvas.getContext('2d'),
         lastTime;
 
-    //var canvaswidth = (function(){return 505;})(); 
+    //var canvaswidth = (function(){return 505;})();
     //var canvasheight = (function(){return 606;})();
 
     canvas.width = NUM_COLS * OFFSET_X;
@@ -152,7 +152,7 @@ var Engine = (function(global) {
      * on your enemy and player entities within app.js
      */
     function renderEntities() {
-        
+
         // showthe updated score
         scoreboard.render();
 

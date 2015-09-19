@@ -4,46 +4,69 @@
 */
 /*
 //////////////////////////////////////////////////////////////////////
-Static variable section
-Since Javascript containt not static key word, I've impletemented
-these variables as functions so that their value is protected
-making them behave as statics with a global scope.
-Credit for this pattern: chamnap @ http://chamnapchhorn.blogspot.com/2008/07/trick-to-use-static-variables-in.html
+Static variables
+
+Note:
+Credit for this "static" pattern: chamnap @ http://chamnapchhorn.blogspot.com/2008/07/trick-to-use-static-variables-in.html
 //////////////////////////////////////////////////////////////////////
 */
-// OFFSET_X: Horizontial offset for each square on the playing space
+/**
+* @description Horizontial offset for each square on the playing space
+*/
 var OFFSET_X = (function(){
     return 101;
 })();
-// OFFSET_Y: Vertical offset for each square on the playing space
+/**
+* @description Vertical offset for each square on the playing space
+*/
 var OFFSET_Y = (function(){
     return 83;
 })();
-// TODO:  make it dynamic instead of static (maybe based on levels?)
-// NUM_COLS:  Total number of columns in the playing space
+/**
+* @description Total number of columns in the playing space
+* TODO:  make it dynamic instead of static (maybe based on levels?)
+*/
 var NUM_COLS = (function(){
     return 7;
 })();
-// NUM_ROWS:  Total number of rows in the playing space
+/**
+* @description Total number of rows in the playing space
+*/
 var NUM_ROWS = (function(){
     return 6;
 })();
-// FIRST_COL: Number of the left most column in the playing space
+/**
+* @description Number of the left most column in the playing space
+*/
 var FIRST_COL = (function(){
     return 1;
 })();
-// FIRST_ROW:  Number of the top row in the playing space
+/**
+* @description Number of the top row in the playing space
+*/
 var FIRST_ROW = (function(){
     return 1;
 })();
-// TODO:  make it dynamic. (based on level?)
-// NUM_ENEMIES:  The starting number of enemies to render in the game.
-// Having an enemy for each column makes the game too hard... so one less is fun.
+/**
+* @description Number of rows on which player can safely walk.
+*/
+var NUM_ROWS_OF_START_AREA = (function(){
+    return 2;
+})();
+/**
+* @description Number of rows on which enemies walk.
+*/
+var NUM_ROWS_OF_ENEMY_PATH = (function(){
+    return (NUM_ROWS - NUM_ROWS_OF_START_AREA - 1); // 1 represents the "score area" (e.g. water)
+})();
+/**
+* @description The starting number of enemies to render in the game.
+* TODO:  make it dynamic. (based on level?)
+*/
 var NUM_ENEMIES = (function(){
+    // Having an enemy for each column makes the game too hard... so one less is fun.
     return NUM_COLS - 1;
 })();
-// TODO: add a sprite selector.
-// Images for the game players, gems and enemies.
 var PLAYER_DEFAULT_IMAGE = (function(){
     return 'images/char-boy.png';
 })();
@@ -75,7 +98,6 @@ function fillRoundedRect(color, x, y, width, height, radius){
   	ctx.fill();
 }
 
-// A utility function to draw a rectangle with rounded corners.
 // Source:  https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Drawing_shapes
 function _roundedRect(x, y, width, height, radius){
   ctx.beginPath();
@@ -90,26 +112,69 @@ function _roundedRect(x, y, width, height, radius){
   ctx.quadraticCurveTo(x,y,x,y+radius);
 }
 
+/**
+ * @description Fast UUID generator, RFC4122 version 4 compliant.
+ * (This is overkill for this application, but why not?)
+ * @author Jeff Ward (jcward.com).
+ * @license MIT license
+ * @link http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript/21963136#21963136
+ * @link http://jcward.com/UUID.js
+ *
+ * Copyright (c) 2015 Jeff Ward
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+ * documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and
+ * to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions
+ * of the Software.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+ * TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+ * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+ * IN THE SOFTWARE.
+ **/
+var UUID = (function() {
+  var self = {};
+  var lut = []; for (var i=0; i<256; i++) { lut[i] = (i<16?'0':'')+(i).toString(16); }
+  self.generate = function() {
+    var d0 = Math.random()*0xffffffff|0;
+    var d1 = Math.random()*0xffffffff|0;
+    var d2 = Math.random()*0xffffffff|0;
+    var d3 = Math.random()*0xffffffff|0;
+    return lut[d0&0xff]+lut[d0>>8&0xff]+lut[d0>>16&0xff]+lut[d0>>24&0xff]+'-'+
+      lut[d1&0xff]+lut[d1>>8&0xff]+'-'+lut[d1>>16&0x0f|0x40]+lut[d1>>24&0xff]+'-'+
+      lut[d2&0x3f|0x80]+lut[d2>>8&0xff]+'-'+lut[d2>>16&0xff]+lut[d2>>24&0xff]+
+      lut[d3&0xff]+lut[d3>>8&0xff]+lut[d3>>16&0xff]+lut[d3>>24&0xff];
+  }
+  return self;
+})();
+
+/**
+* @description compares the file names of two files, stripping the file path if necessary
+* @param {string} filename1 - filename that may or may not include path.  Can be a encoded URI as well
+* @param {string} filename2 - the filename (with full path or relative path and/or URI) to comapare to filename1
+* @returns {boolean} true if file names match
+*/
 function compareFilenames(filename1, filename2) {
 	return (_getFilenameNoPath(filename1) === _getFilenameNoPath(filename2)) ? true : false;
 }
 
-// returns just the filename of the given string striping the file path.
-// source http://stackoverflow.com/questions/423376/how-to-get-the-file-name-from-a-full-path-using-javascript
+/**
+* @description returns just the filename of the given string striping the file path.
+* @param {string} name - filename that may or may not include path.  Can be a encoded URI as well
+* @returns {string} name of the file without the path.
+*
+* source http://stackoverflow.com/questions/423376/how-to-get-the-file-name-from-a-full-path-using-javascript
+*/
 function _getFilenameNoPath(name) {
 	// the resource loader encodes the filenames so decode them for comparisons
 	return decodeURIComponent(name.split('\\').pop().split('/').pop());
 }
 
-//////////////////////////////////////////////////////////////////////
-// Class:  Scoreboard
-//
-// Object representing the scoreboard where the player's score is
-// displayed.
-//
-// A score board also adds Gems to the field as the player's
-// score goes higher.
-//////////////////////////////////////////////////////////////////////
+/**
+* @description Represents the scoreboard where the player's score is displayed.
+* @constructor
+*/
 var Scoreboard = function() {
 	// formatting properties
 	this.position = { x: (NUM_COLS - 1) * OFFSET_X, y: 0 };
@@ -128,8 +193,6 @@ var Scoreboard = function() {
 	this.score = 0;
 	// tracks the highest score reached during this game
 	this.highScore = 0;
-	// running time of the game, useful for timestamps of events.
-	this.elapsedTime = 0;
 
 	// animation properties - the score blinks when points are earned.
 	this.isVisible = true;
@@ -141,36 +204,47 @@ var Scoreboard = function() {
 
 };
 
-// CELEBRATION_DELAY:  how long to celebrate a score
-// seconds to delay before resetting player to starting position.
+/**
+* @description how long to celebrate a score
+* @returns {number} number of seconds to celebrate (continue animation)
+*/
 Scoreboard.prototype.CELEBRATION_DELAY = (function(){
     return 2;
 })();
 
-Scoreboard.prototype.getElapsedTime = function() {
-	return this.elapsedTime;
-};
-
+/**
+* @description increases the game's score
+* @param {number} value - number of points by which to increase the score
+*/
 Scoreboard.prototype.increment = function(value) {
 	this.score += value;
 	this.animateScore = true;
 	this.animationTimer = 0;
-	// TODO: make sure there is only one gem in a square.
 	// don't allow a gem to show up if the highscore is not reached.
-	//   this means that if the player lost points they won't get another gem.
-	// add a new gem to the game if the score is high enough
+	// this means that if the player lost points they won't get another gem
+	//until they reach the previously attained score.
 	if (this.score > this.highScore){
 		this.highScore = this.score;
-		if (this.score % 3 === 0) {
-			gems.push(new Saphire());
-		} else if (this.score % 7 === 0) {
-			gems.push(new Emerald());
-		} else if (this.score % 13 === 0) {
-			gems.push(new Diamond());
+		// TODO: Do I need to add public accessor methods for these properties?
+		if (player.hasScored) {
+			// display a new gem every 3rd score
+			if (player.scoreCounter % 3 === 0) {
+				gems.push(new Saphire());
+			}
+			// add a more valueable gem sometimes too.
+			if (this.score % 5 === 0) {
+				gems.push(new Emerald());
+			} else if (this.score % 13 === 0) {
+				gems.push(new Diamond());
+			}
 		}
 	}
 };
 
+/**
+* @description decreases the game's score
+* @param {number} value - number of points by which to decrease the score
+*/
 Scoreboard.prototype.decrement = function(value) {
 	if (this.score > 0 && this.score - value >= 0) {
 		this.score -= value;
@@ -181,7 +255,9 @@ Scoreboard.prototype.decrement = function(value) {
 	this.animationTimer = 0;
 };
 
-// TODO:  if you clear a level then reset to 0
+/**
+* @description restores the scoreboard to its initial state after an animation changes it.
+*/
 Scoreboard.prototype.reset = function(){
 	this.isVisible = true;
 	this.textcolor = '#fff';
@@ -192,6 +268,9 @@ Scoreboard.prototype.reset = function(){
 	this.animateCollision = false;
 };
 
+/**
+* @description draws the scoreboard.
+*/
 Scoreboard.prototype.render = function() {
 	// create the scoreboard background
 	ctx.fillStyle = this.bgcolor;
@@ -227,10 +306,21 @@ Scoreboard.prototype.render = function() {
 	ctx.strokeText(this.score, this.position.x + this.dimension.width - 15, this.position.y + this.dimension.height - 15);
 };
 
+/**
+* @description makes the score blink.
+* @param {number} dt - time delta information
+* @param {string} color - color code for the to use color for the numbers on the scoreboard.
+*/
 Scoreboard.prototype.blinkScore = function(dt, color) {
 	this.animate(dt, .15, color)
 };
 
+/**
+* @description animate the score making it blink.
+* @param {number} dt - time delta information
+* @param {number} duration - how long to hold between blinks.
+* @param {string} color - color code for the to use color for the numbers on the scoreboard.
+*/
 Scoreboard.prototype.animate = function(dt, duration, color) {
 	this.blinkTimer += dt;
 	if (this.blinkTimer > duration) {
@@ -250,10 +340,11 @@ Scoreboard.prototype.animate = function(dt, duration, color) {
 	}
 };
 
+/**
+* @description Updates the scoreboard: Engine calls this method for each iteration of the animation frame
+* @param {number} dt - time delta information
+*/
 Scoreboard.prototype.update = function(dt) {
-	// keeping track of how long we have played.
-	this.elapsedTime += dt;
-
 	// has there been a collision or a score??
 	if (this.animateScore || this.animateCollision ) {
 		    	// increment the elapsed time to the timer.
@@ -271,13 +362,16 @@ Scoreboard.prototype.update = function(dt) {
 	}
 };
 
-//////////////////////////////////////////////////////////////////////
-// Class:  GamePiece
-//
-// Base class for all the picese on the board (Player, Enemy, Gem).
-//////////////////////////////////////////////////////////////////////
+/**
+* @description Represents a playing piece on the board (Base class of: Player, Enemy, Gem).
+* Provides common animation methods for subclasses and some utility methods
+* @constructor
+*/
 var GamePiece = function() {};
 
+/**
+* @description resets this GamePiece back to a state where it is ready to perform an animation.
+*/
 GamePiece.prototype.initAnimationState = function() {
 	// timers allow animation for a certain period of time.
     this.animationTimer = 0;
@@ -292,29 +386,38 @@ GamePiece.prototype.initAnimationState = function() {
     this.animationShakeState = 'left';
 };
 
-// CELEBRATION_DELAY:  how long to celebrate a score
-// seconds to delay before resetting piece to starting position.
+/**
+* @description  how long to celebrate a score
+* @returns {number} seconds to delay for celebration animations
+*/
 GamePiece.prototype.CELEBRATION_DELAY = (function(){
     return 2;
 })();
 
-// COLLISION_ANIMATION_DELAY:  how long to animate a collision
-// seconds to delay before resetting piece to starting position.
+/**
+* @description  how long to animate a collision
+* @returns {number} seconds to delay for collision animations
+*/
 GamePiece.prototype.COLLISION_ANIMATION_DELAY = (function(){
     return 1.5;
 })();
 
-// functions _updateX and _updateY
-// update the (x, y) coordinate of the object based on the current row and column of the object.
-// 	Note: subtracts 1 from obj.col as drawing of images starts at (0, 0)
-// 	Note: to make code more readable col values start at 1
-// 	Note: the xOffset and yOffset are used to position the image in the square (so it looks nice)
+/**
+* @description update the x coordinate of the object based on its current column.
+*/
 GamePiece.prototype._updateX = function() {
-    this.x = (this.col -1) * OFFSET_X + this.xOffset;
+	// subract 1 to make code more readable (col values start at 1 instead of 0)
+    // the xOffset is used to position the image in the square (so it looks nice)
+    this.x = (this.col - 1) * OFFSET_X + this.xOffset;
 };
 
+/**
+* @description update the y coordinate of the object based on its current row.
+*/
 GamePiece.prototype._updateY = function() {
-    this.y = (this.row -1) * OFFSET_Y - this.yOffset;
+    // subtract 1 to make code more readable (row values start at 1 instead of 0)
+    // the yOffset is used to position the image in the square (so it looks nice)
+    this.y = (this.row - 1) * OFFSET_Y - this.yOffset;
 };
 
 GamePiece.prototype._incrementRow = function() {
@@ -337,23 +440,29 @@ GamePiece.prototype._decrementCol = function() {
     this._updateX();
 };
 
-// ... functions randomRow and random column return integers representing
-// a row or colunm number selected randomly
-//
-// Returns a random postive integer representing a row where enemies walk
-// possible values returned: (2, 3, 4) to represent the stone walkway.
+/**
+* @description provides a row number selected randomly
+* @return {number} a random postive integer representing a row where enemies walk
+* (i.e. possible values returned represent the row numbers of the the stone walkway.)
+*/
 GamePiece.prototype.randomRow = function() {
-	// floor of Math.random() * 3 returns (0, 1, 2) then add 2 to match the 'road'
-    return Math.floor((Math.random() * 3) + 2);
+	// ex. floor of Math.random() * 3 returns (0, 1, 2) then offset by start area to match location of the 'road'
+    return Math.floor((Math.random() * NUM_ROWS_OF_ENEMY_PATH) + NUM_ROWS_OF_START_AREA);
 };
 
-// returns random integer representing a column in the playing space
-// possible values returned:  (1, 2, 3, 4, 5)
+/**
+* @description provides a row number selected randomly
+* @return {number} returns random integer representing a column in the playing space
+*/
 GamePiece.prototype.randomCol = function() {
-    // floor of Math.random() * 3 returns (0, 1, 2, 3, 4) then offset by 1
-    return Math.floor(Math.random() * 5) + 1;
+    // ex. floor of Math.random() * 4 returns (0, 1, 2, 3, 4) then offset by 1
+    return Math.floor(Math.random() * NUM_COLS - 1) + 1;
 };
 
+/**
+* @description Retrieves the image for this piece from the resource cache.
+* @return {Image} returns images representing this piece on the board.
+*/
 GamePiece.prototype.getSpriteImg = function() {
 	return Resources.get(this.sprite);
 };
@@ -371,21 +480,20 @@ GamePiece.prototype.showSpriteImg = function() {
 };
 
 GamePiece.prototype.isSpriteImgVisible = function() {
+	// compares the file names of the sources of the sprite for this object.
+	// if they differ that means the object is currently not visibile
+	// because the source file has been removed. (e.g. src == '')
 	return compareFilenames(this.getSpriteImg().src, this.sprite);
 };
 
-//////////////////////////////////////////////////////////////////////
-// Method:  animate
-//
-//  Shakes the piece back and forth to show dread or excitement.
-//
-// Parameters:
-// 	dt - delta of the time since last frame
-//  delta - distance to move piece in animation.
-//  duration - how long to wait between shake movements
-//  moveHorizontal - move on x axis (horizontally)
-//  moveVertical - move on y axis (vertically)
-//////////////////////////////////////////////////////////////////////
+/**
+* @description Shakes the piece back and forth to show dread or excitement.
+* @param {number} dt - delta of the time since last frame
+* @param {number} delta - distance to move piece in animation.
+* @param {number} duration - how long to wait between shake movements
+* @param {boolean}  moveHorizontal - move on x axis (horizontally)
+* @param {boolean}  moveVertical - move on y axis (vertically)
+*/
 GamePiece.prototype.animate = function(dt, delta, duration, moveHorizontal, moveVertical) {
 	// TODO: add an outer glow to the piece while animated
 	this.shakeTimer += dt;
@@ -414,6 +522,11 @@ GamePiece.prototype.animate = function(dt, delta, duration, moveHorizontal, move
 
 };
 
+/**
+* @description Blink piece on and off (to show the piece is going to diappear for good).
+* @param {number} dt - delta of the time since last frame
+* @param {number} duration - how long to wait between shake movements
+*/
 GamePiece.prototype.animateBlink = function(dt, duration) {
 	this.blinkTimer += dt;
 	if (this.blinkTimer > duration) {
@@ -430,11 +543,10 @@ GamePiece.prototype.animateBlink = function(dt, duration) {
 	}
 };
 
-//////////////////////////////////////////////////////////////////////
-// Class:  Enemy
-//
-// Represents the enemies our player must avoid.
-//////////////////////////////////////////////////////////////////////
+/**
+* Represents the enemy our player must avoid at all costs.
+* @constructor
+*/
 var Enemy = function() {
     this.ENEMY_SPEED_THROTTLE = 60;
     this.ENEMY_SPEED_MINIMUM = 10;
@@ -455,11 +567,17 @@ var Enemy = function() {
 Enemy.prototype = Object.create(GamePiece.prototype);
 Enemy.prototype.constructor = Enemy;
 
-// TODO:  Rewrite to recurse until good speed found.
+/**
+* @description Assigns a random speed to this enemy.
+*/
 Enemy.prototype.setSpeed = function() {
 	this.speed = this._setSpeed();
 };
 
+/**
+* @description utility function to find an accpetable speed for this enemy
+* recurses until speed that is fast enough is retruned from the randomizer.
+*/
 Enemy.prototype._setSpeed = function() {
 	var speed = Math.floor(Math.random() * this.ENEMY_SPEED_THROTTLE);
 
@@ -469,6 +587,11 @@ Enemy.prototype._setSpeed = function() {
 	return speed * 10;
 };
 
+/**
+* @description Moves the Enemy farther right.
+* Moves to the right unless the end of the row is reached,
+* in which case, reset the Enemy back to the left side of the screen.
+*/
 Enemy.prototype.move = function(dt) {
     if (this.x < NUM_COLS * OFFSET_X + this.xOffset) {
         this.x = this.x + (this.speed * dt);
@@ -477,12 +600,17 @@ Enemy.prototype.move = function(dt) {
     }
 };
 
+/**
+* @description make the enemy dance (because of a Collision with a player)
+*/
 Enemy.prototype.animateCollision = function(dt) {
 	this.animate(dt, 2, 0.1, false, true);
 };
 
-// Places the Enemy into the starting position to the left
-// selecting a random row and placing the enemy off the screen.
+/**
+* @description Places the Enemy into the starting position to the left
+* selecting a random row and placing the enemy off the screen.
+*/
 Enemy.prototype.reset = function() {
     this.col = FIRST_COL - 1; // always reset off screen
     this.row = this.randomRow();
@@ -492,8 +620,10 @@ Enemy.prototype.reset = function() {
     this.hasCollided = false;
 };
 
-// Update the enemy's position, required method for game
-// Parameter: dt, a time delta between ticks
+/**
+* @description Update the enemy's position, required method for game
+* @param {number} dt, a time delta between ticks
+*/
 Enemy.prototype.update = function(dt) {
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
@@ -518,14 +648,13 @@ Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
-//////////////////////////////////////////////////////////////////////
-// Class:  Player
-//
-// The little guy running around in the arena!
-// Runs accross the screen and has a scoreboard that it updates
-// when he/she makes it to the 'water.'  Animates when there
-// is a collision with any of the enemies or when the water is reached.
-//////////////////////////////////////////////////////////////////////
+/**
+* @description Represents the little guy running around in the arena!
+* Runs accross the screen and has a scoreboard that it updates
+* when he/she makes it to the 'water.'  Animates when there
+* is a collision with any of the enemies or when the water is reached.
+* @constructor
+*/
 var Player = function (){
     this.col = this.INIT_COL;
     this.row = this.INIT_ROW;
@@ -537,34 +666,41 @@ var Player = function (){
     this.initAnimationState();
     this.hasCollided = false;
     this.hasScored = false;
+    this.scoreCounter = 0;
 };
 Player.prototype = Object.create(GamePiece.prototype);
 Player.prototype.constructor = Player;
 
-// INIT_COL:  Starting column for Player
+/**
+* @description Starting column for Player
+*/
 Player.prototype.INIT_COL = (function(){
     return Math.round(NUM_COLS / 2);
 })();
 
-// INIT_ROW:  Starting row for Player
+/**
+* @description Starting row for Player
+*/
 Player.prototype.INIT_ROW = (function(){
     return NUM_ROWS;
 })();
 
+/**
+* @description Places the player back to the original position
+* after a collision and initializes all the parameters needed
+* to run animation after a collision.
+*/
 Player.prototype.reset = function() {
     this.col = this.INIT_COL;
     this.row = this.INIT_ROW;
     this._updateX();
     this._updateY();
     this.hasCollided = false;
-    this.animationTimer = 0;
-    this.celebrationTimer = 0;
-    this.shakeTimer = 0;
-    this.animationInitialized = false;
-    this.animationShakeState = 'left';
+    this.initAnimationState();
     this.hasScored = false;
     this.showSpriteImg();
 };
+
 
 Player.prototype.animateCollision = function(dt) {
 	//this.animate(dt, 20, 0.15, true, false);
@@ -575,15 +711,17 @@ Player.prototype.animateScore = function(dt) {
 	this.animate(dt, 2, 0.1, false, true);
 };
 
+/**
+* @description Determine if the player has collided with an enemy.
+*/
 Player.prototype.collisionCheck = function() {
-	// only check if this player hasn't already collieded with an enemy.
 	if (!this.hasCollided) {
 		for (var i = 0; i < allEnemies.length; i++) {
-			// check if the edges of the player are touching an enemy
-			// or if the player is in the same row.
-	        if ((this.collisionCheckLeft(allEnemies[i]) ||
-	        	this.collisionCheckRight(allEnemies[i])) &&
-	            this.row === allEnemies[i].row ) {
+			// check if the player is in the same row.
+			// if so, see if the edges of the player are touching an enemy
+	        if (this.row === allEnemies[i].row &&
+	        	(this.collisionCheckLeft(allEnemies[i]) ||
+	        	this.collisionCheckRight(allEnemies[i]))) {
 	            //collision! Player loses a point!
 	            scoreboard.decrement(1);
 	            // change player state - triggers animations and freezes player
@@ -595,6 +733,10 @@ Player.prototype.collisionCheck = function() {
 	}
 };
 
+/**
+* @description Determine if the left side of the player has touched an enemy.
+* @param {Enemy}
+*/
 Player.prototype.collisionCheckLeft = function(enemy) {
 	// compare the left side of the player to the width of the enemy.
 	// account for a 2 pixel margin on the enemy image
@@ -604,6 +746,10 @@ Player.prototype.collisionCheckLeft = function(enemy) {
 	        this.x + 10  < enemy.x + enemy.getSpriteImg().width - 2 );
 };
 
+/**
+* @description Determine if the right side of the player has touched an enemy.
+* @param {Enemy}
+*/
 Player.prototype.collisionCheckRight = function(enemy) {
 	// compare the right side of the player to the width of the enemy.
 	// account for a 2 pixel margin on the enemy image
@@ -613,6 +759,10 @@ Player.prototype.collisionCheckRight = function(enemy) {
 	        this.x + this.getSpriteImg().width - 10 < enemy.x + enemy.getSpriteImg().width - 2);
 };
 
+/**
+* @description Check if the player is in the same square as a gem.
+* If so, award the player the points for the gem.
+*/
 Player.prototype.collectGems = function(){
 	// if in a collision situation do not check for gems.
     if (!this.hasCollided) {
@@ -628,13 +778,18 @@ Player.prototype.collectGems = function(){
     }
 };
 
+/**
+* @description Determine if the player has scored by reaching the top of the playing space.
+* @param {number} dt - time delta information
+*/
 Player.prototype.scoreCheck = function(dt) {
 	 if (this.row === FIRST_ROW) {
 	 	// The player has scored!
-	    // CELEBRATE before moving to initial position
-	    // and update scoreboard by 1 point, but only once during the player's celebration.
+	    // CELEBRATE before moving to the starting position for another round
+	    // and update scoreboard by 1 point, (but only once during the player's celebration).
     	if (this.hasScored === false)	{
     		this.hasScored = true;
+    		this.scoreCounter++;
     		scoreboard.increment(1);
     	}
     	// increment the elapsed time to the timer.
@@ -647,6 +802,10 @@ Player.prototype.scoreCheck = function(dt) {
     }
 };
 
+/**
+* @description Update the players's position, required method for game.
+* @param {number} dt, a time delta between ticks
+*/
 Player.prototype.update = function(dt) {
     // see if player is in the top row (score!)
     this.scoreCheck(dt);
@@ -724,14 +883,13 @@ Player.prototype.handleInput = function(keyCode) {
     }
 };
 
-//////////////////////////////////////////////////////////////////////
-// Class:  Gem
-//
-// Object representing the a gem worth extra points if a player
-// picks it up.
-//////////////////////////////////////////////////////////////////////
+/**
+* @description representing the a gem worth extra points if a player
+* picks it up.
+* @constructor
+*/
 var Gem = function() {
-	this.id = scoreboard.getElapsedTime();
+	this.id = UUID.generate();
 	this.setUniqueLocation(gems);
 	// offsets to display the images in the center of the square
     this.xOffset = (OFFSET_X - this.GEM_WIDTH) / 2;
@@ -748,19 +906,23 @@ var Gem = function() {
 Gem.prototype = Object.create(GamePiece.prototype);
 Gem.prototype.constructor = Gem;
 
-/** Override parent method to handle a Gem's local image
+/**
+* @description Overrides parent (GamePiece) method to handle a Gem's local image.
+* The resources cache cannot be used for gems because the
 */
 Gem.prototype.getSpriteImg = function() {
 	return this.img;
 };
 
-/** Override parent method to handle a Gem's local image
+/**
+* @description Overrides parent (GamePiece) method to handle a Gem's local image
 */
 Gem.prototype.hideSpriteImg = function() {
 	this.img.src = '';
 };
 
-/** Override parent method to handle a Gem's local image
+/**
+* @description Overrides parent (GamePiece) method to handle a Gem's local image
 */
 Gem.prototype.showSpriteImg = function() {
 	// be sure the sprite is hidden before showing it again
@@ -770,14 +932,16 @@ Gem.prototype.showSpriteImg = function() {
 	}
 };
 
-/** Override parent method to handle a Gem's local image
+/**
+* @description Overrides parent (GamePiece) method to handle a Gem's local image
 */
 Gem.prototype.isSpriteImgVisible = function() {
 	return compareFilenames(this.img.src, this.sprite);
 };
 
-/** Override parent method to handle a Gem's local image
-*   The resources cache cannot be used for gems because the
+/**
+* @description Find a square on the board free of other gems.
+* Keeps a gem from being placed on top of another gem.
 */
 Gem.prototype.setUniqueLocation = function(gems) {
 	this.row = this.randomRow();
@@ -815,13 +979,13 @@ Gem.prototype.GEM_HEIGHT = (function(){
 	return 75;
 })();
 
-// Draw the Gem on the screen
 Gem.prototype.render = function() {
     ctx.drawImage(this.img, this.x, this.y, this.GEM_WIDTH, this.GEM_HEIGHT);
 };
 
 Gem.prototype.update = function(dt) {
    	if (this.isCollected) {
+   		this.countdownTimer = 99;
    		// player is in an animation so increment the elapsed time to the timer
 		this.animationTimer += dt;
 		// while timer is running, run animation or stop when timer expires.
@@ -853,15 +1017,28 @@ Gem.prototype.remove = function(){
 	}
 };
 
+/**
+* @description Make the gem move back and forth (when collected)
+* @param {number} dt - the time delta information
+*/
 Gem.prototype.animateScore = function(dt) {
 	// dt, delta, duration, moveHorizontal, moveVertical
 	this.animate(dt, 3, 0.1, true, true);
 };
 
+/**
+* @description Blinking on and off (during the countdown before diappearing)
+* @param {number} dt - the time delta information
+*/
 Gem.prototype.animateCountdown = function(dt) {
 	this.animateBlink(dt, 0.25);
 };
 
+/**
+* @description Represents a Saphire the least valuable of the Gems
+* and the easiest of the Gems to collect because it stays on the board the longest.
+* @constructor
+*/
 var Saphire = function(){
 	Gem.call(this);
 	this.sprite = GEM_BLUE_IMAGE;
@@ -871,22 +1048,31 @@ var Saphire = function(){
 Saphire.prototype = Object.create(Gem.prototype);
 Saphire.prototype.constructor = Saphire;
 
+/**
+* @description Represents an Emerald a more valuable Gem
+* @constructor
+*/
 var Emerald = function(){
 	Gem.call(this);
 	this.sprite = GEM_GREEN_IMAGE;
 	this.img.src = this.sprite;
 	this.value = 3;
-	this.countdownTimer = 7;
+	this.countdownTimer = 9;
 };
 Emerald.prototype = Object.create(Gem.prototype);
 Emerald.prototype.constructor = Emerald;
 
+/**
+* @description Represents a Diamond the most valuable of the Gems
+* and the hardest of the Gems to collect because it stays on the board for a short time.
+* @constructor
+*/
 var Diamond = function(){
 	Gem.call(this);
 	this.sprite = GEM_ORANGE_IMAGE;
 	this.img.src = this.sprite;
 	this.value = 10;
-	this.countdownTimer = 5;
+	this.countdownTimer = 6;
 };
 Diamond.prototype = Object.create(Gem.prototype);
 Diamond.prototype.constructor = Diamond;

@@ -44,7 +44,7 @@ Enjoy!
 ## Contributors
 
 ### Author
-*David Dickinson*
+David Dickinson
 
 The project is based on scripts provided by Udacity instructors (`js/resources.js` and `js/engine.js`)
 

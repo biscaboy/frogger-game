@@ -381,7 +381,9 @@ Scoreboard.prototype.update = function(dt) {
 * Provides common animation methods for subclasses and some utility methods
 * @constructor
 */
-var GamePiece = function() {};
+var GamePiece = function() {
+	this.isVisible = true;
+};
 
 /**
 * @description resets this GamePiece back to a state where it is ready to perform an animation.
@@ -482,22 +484,15 @@ GamePiece.prototype.getSpriteImg = function() {
 };
 
 GamePiece.prototype.hideSpriteImg = function() {
-	this.getSpriteImg().src = '';
+	this.isVisible = false;
 };
 
 GamePiece.prototype.showSpriteImg = function() {
-	// be sure the sprite is hidden before showing it again
-	// because reassigning the image is expensive and slows the game.
-	if (!this.isSpriteImgVisible()) {
-		this.getSpriteImg().src = this.sprite;
-	}
+	this.isVisible = true;
 };
 
 GamePiece.prototype.isSpriteImgVisible = function() {
-	// compares the file names of the sources of the sprite for this object.
-	// if they differ that means the object is currently not visibile
-	// because the source file has been removed. (e.g. src == '')
-	return compareFilenames(this.getSpriteImg().src, this.sprite);
+	return this.isVisible;
 };
 
 /**
@@ -562,6 +557,7 @@ GamePiece.prototype.animateBlink = function(dt, duration) {
 * @constructor
 */
 var Enemy = function() {
+	GamePiece.call(this);
     this.ENEMY_SPEED_THROTTLE = 40;
     this.ENEMY_SPEED_MINIMUM = 10;
     this.xOffset = 0;
@@ -660,7 +656,9 @@ Enemy.prototype.update = function(dt) {
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    if (this.isSpriteImgVisible()) {
+    	ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    }
 };
 
 /**
@@ -671,6 +669,7 @@ Enemy.prototype.render = function() {
 * @constructor
 */
 var Player = function (){
+	GamePiece.call(this);
     this.col = this.INIT_COL;
     this.row = this.INIT_ROW;
     this.xOffset = 0;
@@ -844,7 +843,9 @@ Player.prototype.update = function(dt) {
 };
 
 Player.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    if (this.isSpriteImgVisible()) {
+    	ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    }
 };
 
 Player.prototype.moveUp = function() {
@@ -904,6 +905,7 @@ Player.prototype.handleInput = function(keyCode) {
 * @constructor
 */
 var Gem = function() {
+	GamePiece.call(this);
 	this.id = UUID.generate();
 	this.setUniqueLocation(gems);
 	// offsets to display the images in the center of the square
@@ -914,45 +916,9 @@ var Gem = function() {
     this.initAnimationState();
     this.isCollected = false;
     this.countdownTimer = this.DEFAULT_DISPLAY_TIME;
-	// Since there may be multiple gems on the board, each
-	// gem needs it's own copy of the sprite image.
-	this.img = new Image();   // Create new img element
 };
 Gem.prototype = Object.create(GamePiece.prototype);
 Gem.prototype.constructor = Gem;
-
-/**
-* @description Overrides parent (GamePiece) method to handle a Gem's local image.
-* The resources cache cannot be used for gems because the
-*/
-Gem.prototype.getSpriteImg = function() {
-	return this.img;
-};
-
-/**
-* @description Overrides parent (GamePiece) method to handle a Gem's local image
-*/
-Gem.prototype.hideSpriteImg = function() {
-	this.img.src = '';
-};
-
-/**
-* @description Overrides parent (GamePiece) method to handle a Gem's local image
-*/
-Gem.prototype.showSpriteImg = function() {
-	// be sure the sprite is hidden before showing it again
-	// because reassigning the image is expensive and slows the game.
-	if (!this.isSpriteImgVisible()) {
-		this.img.src = this.sprite;
-	}
-};
-
-/**
-* @description Overrides parent (GamePiece) method to handle a Gem's local image
-*/
-Gem.prototype.isSpriteImgVisible = function() {
-	return compareFilenames(this.img.src, this.sprite);
-};
 
 /**
 * @description Find a square on the board free of other gems.
@@ -995,7 +961,9 @@ Gem.prototype.GEM_HEIGHT = (function(){
 })();
 
 Gem.prototype.render = function() {
-    ctx.drawImage(this.img, this.x, this.y, this.GEM_WIDTH, this.GEM_HEIGHT);
+	if (this.isSpriteImgVisible()) {
+    	ctx.drawImage(Resources.get(this.sprite), this.x, this.y, this.GEM_WIDTH, this.GEM_HEIGHT);
+    }
 };
 
 Gem.prototype.update = function(dt) {
@@ -1056,7 +1024,6 @@ Gem.prototype.animateCountdown = function(dt) {
 var Saphire = function(){
 	Gem.call(this);
 	this.sprite = GEM_BLUE_IMAGE;
-	this.img.src = this.sprite;
 	this.value = 1;
 };
 Saphire.prototype = Object.create(Gem.prototype);
@@ -1069,7 +1036,6 @@ Saphire.prototype.constructor = Saphire;
 var Emerald = function(){
 	Gem.call(this);
 	this.sprite = GEM_GREEN_IMAGE;
-	this.img.src = this.sprite;
 	this.value = 3;
 	this.countdownTimer = 10;
 };
@@ -1097,7 +1063,6 @@ Emerald.prototype.randomRow = function() {
 var Diamond = function(){
 	Gem.call(this);
 	this.sprite = GEM_ORANGE_IMAGE;
-	this.img.src = this.sprite;
 	this.value = 10;
 	this.countdownTimer = 8;
 };

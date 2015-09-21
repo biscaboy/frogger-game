@@ -552,6 +552,12 @@ GamePiece.prototype.animateBlink = function(dt, duration) {
 	}
 };
 
+GamePiece.prototype.render = function() {
+    if (this.isSpriteImgVisible()) {
+    	ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    }
+};
+
 /**
 * Represents the enemy our player must avoid at all costs.
 * @constructor
@@ -651,13 +657,6 @@ Enemy.prototype.update = function(dt) {
 			this.initAnimationState();
 			this.hasCollided = false;
 		}
-    }
-};
-
-// Draw the enemy on the screen, required method for game
-Enemy.prototype.render = function() {
-    if (this.isSpriteImgVisible()) {
-    	ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
     }
 };
 
@@ -839,12 +838,6 @@ Player.prototype.update = function(dt) {
         this.collisionCheck();
 	    // all clear... has the player collected any gems?
         this.collectGems();
-    }
-};
-
-Player.prototype.render = function() {
-    if (this.isSpriteImgVisible()) {
-    	ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
     }
 };
 

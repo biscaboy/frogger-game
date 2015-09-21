@@ -1,26 +1,40 @@
-frontend-nanodegree-arcade-game
-===============================
+#Udacity FEND Project 3: Arcade Game - Frogger Clone
 
-Students should use this rubric: https://www.udacity.com/course/viewer#!/c-ud015/l-3072058665/m-3072588797
+This game is a development exercise to demonstrate understanding of object oriented programming concepts 
+implemented in Javascript.  
 
-for self-checking their submission.
-===============================
+Rubric for this project: https://www.udacity.com/course/viewer#!/c-ud015/l-3072058665/m-3072588797
 
-Implementation of the FEND Arcade Game
+##Additional Functionality
+--------------
 
-Frogger Arcade Game
+This project completes all the requirements;  in addition the folloing functionality was added:
 
-This project completes all the requirements above.
+###1.  Scoreboard 
+A simple scoreboard that increments when the player scores and decrements when there is a collision.  
+The player scores a point for every time he crosses the road to the water at the top of the screen. 
 
-I included the folling additional functionality:
+###2.  Collectsbles.  
+The player can score extra points by picking up different types of Gems.  
 
-1.  A simple scoreboard that increments when the player scores and decrements when there is a collision.
+| Gem Class Name | Color | Points | Time displayed | 
+| ---------------- | ----------- | ------------ | --------------- |
+| Saphires | Blue  | 1 point | 15 sec |
+| Emeralds | Green  | 3 points | 10 sec |
+| Diamond | Yellow  | 10 points | 8 sec |
 
-2.  Collectsbles.  The player can score extra points by picking up different types of Gems.  
-	a.  Saphires (Blue) are 1 extra point    
-	b.  Emeralds (Green) are 2 extra points.
-	c.  Diamonds (Yellow) are 5 extra points.
+###3.  Animations
+All playing pieces move, shake or blink based on collisions, scores or collections.
 
-3.  Animation to the player after scoring or a collision.
+###4.  Board size
+The board has been modified to be dynamic from the provided board in `engine.js`.  
+To change the size of the playing space modify `NUM_ROWS` and/or `NUM_COLS in the `app.js` file.
+ 
+##Starting the Game
+Execute frogger-game/index.html in your favorite browser
 
-There is currently only a single level and the play never stops.  
+Currently there is only a single level and the play never stops.  
+
+Enjoy!
+
+

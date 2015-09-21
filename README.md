@@ -7,7 +7,10 @@ David Dickinson - based on scripts provided by Udacity
 This game is a development exercise to demonstrate understanding of object oriented programming concepts
 implemented in Javascript using HTML5 Canvas.
 
-[Rubric for this project:]https://www.udacity.com/course/viewer#!/c-ud015/l-3072058665/m-3072588797
+The game replicates the concept of the 1980's arcade game **Frogger**, with a path to be crossed by the player
+all the while avoiding *Enemies* who march across the screen from left to right.
+
+[Rubric for this project](https://www.udacity.com/course/viewer#!/c-ud015/l-3072058665/m-3072588797)
 
 Currently there is only a single level, and the play never stops.
 

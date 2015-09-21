@@ -43,21 +43,750 @@
 
 
     <section>
-        <article><h1>frontend-nanodegree-arcade-game</h1><p>Students should use this rubric: https://www.udacity.com/course/viewer#!/c-ud015/l-3072058665/m-3072588797</p>
-<h1>for self-checking their submission.</h1><p>Implementation of the FEND Arcade Game</p>
-<p>Frogger Arcade Game</p>
-<p>This project completes all the requirements above.</p>
-<p>I included the folling additional functionality:</p>
-<ol>
-<li><p>A simple scoreboard that increments when the player scores and decrements when there is a collision.</p>
+        <article><h1>Udacity FEND Project 3: Frogger Arcade Game</h1><h2>Description</h2><p>This game is a development exercise to demonstrate understanding of object oriented programming concepts
+implemented in Javascript using HTML5 Canvas.</p>
+<p>The game replicates the concept of the 1980's arcade game <strong>Frogger</strong>, with a path to be crossed by the player
+all the while avoiding <em>Enemies</em> who march across the screen from left to right.</p>
+<p>Currently there is only a single level, and the play never stops.</p>
+<p><a href="https://www.udacity.com/course/viewer#!/c-ud015/l-3072058665/m-3072588797">Rubric for this project</a></p>
+<h2>Additional Functionality Beyond Rubic</h2><p>This project completes all the requirements.  In addition to the rubric requirements, the following functionality was added:</p>
+<h3>1.  Scoreboard</h3><p>A simple scoreboard that increments when the player scores and decrements when there is a collision.
+The player scores a point for every time he crosses the road to the water at the top of the screen.</p>
+<h3>2.  Collectibles</h3><p>The player can score extra points by picking up different types of Gems.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Gems</th>
+<th style="text-align:left">Color</th>
+<th style="text-align:right">Points</th>
+<th style="text-align:right">Lifetime</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Saphires</td>
+<td style="text-align:left">Blue</td>
+<td style="text-align:right">1 point</td>
+<td style="text-align:right">15 sec</td>
+</tr>
+<tr>
+<td style="text-align:left">Emeralds</td>
+<td style="text-align:left">Green</td>
+<td style="text-align:right">3 points</td>
+<td style="text-align:right">10 sec</td>
+</tr>
+<tr>
+<td style="text-align:left">Diamonds</td>
+<td style="text-align:left">Yellow</td>
+<td style="text-align:right">10 points</td>
+<td style="text-align:right">8 sec</td>
+</tr>
+</tbody>
+</table>
+<h3>3.  Animations</h3><p>All playing pieces move, shake or blink based on collisions, scores or collections.</p>
+<h3>4.  Board size</h3><p>The board has been modified from the provided board in <code>engine.js</code>.
+To change the size of the playing space modify the static variables <code>NUM_ROWS</code> and/or <code>NUM_COLS</code> in the <code>app.js</code> file.</p>
+<h2>Starting the Game</h2><p>Execute frogger-game/index.html in your favorite HTML5 enabled browser.</p>
+<p>Enjoy!</p>
+<h2>Contributors</h2><h3>Author</h3><p>David Dickinson</p>
+<p>The project is based on scripts provided by Udacity instructors (<code>js/resources.js</code> and <code>js/engine.js</code>)</p>
+<h3>Other Sources Used</h3><p>UUID by Jeff Ward (jcward.com) - A <a href="http://jcward.com/UUID.js">modualized library</a> for creating a Universally Unique Identifier is
+included in the project. (see <code>js/app.js</code>)</p>
+<p><a href="http://stackoverflow.com/questions/423376/how-to-get-the-file-name-from-a-full-path-using-javascript">Stakeoverflow - Stripping Path from a Filename.</a></p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Drawing_shapes">MDN Canvas API Docs - Drawing Shapes with Canvas.</a></p>
+<p>JSDoc Documentation generated using <a href="https://github.com/jsdoc3/jsdoc">JSDoc</a></p>
+<p>Class Documentation below generated using <a href="https://github.com/jsdoc2md/jsdoc-to-markdown">JSDoc to Markdown</a></p>
+<h2>Documentation</h2><p><a href="https://github.com/biscaboy/frogger-game/tree/master/doc">JSDoc files</a> have been provided in the <code>doc</code> directory.</p>
+<h2>Classes</h2><p><dl></p>
+<p><dt><a href="#Scoreboard">Scoreboard</a></dt></p>
+<p><dd></dd></p>
+<p><dt><a href="#GamePiece">GamePiece</a></dt></p>
+<p><dd></dd></p>
+<p><dt><a href="#Enemy">Enemy</a></dt></p>
+<p><dd></dd></p>
+<p><dt><a href="#Player">Player</a></dt></p>
+<p><dd></dd></p>
+<p><dt><a href="#Gem">Gem</a></dt></p>
+<p><dd></dd></p>
+<p><dt><a href="#Saphire">Saphire</a></dt></p>
+<p><dd></dd></p>
+<p><dt><a href="#Emerald">Emerald</a></dt></p>
+<p><dd></dd></p>
+<p><dt><a href="#Diamond">Diamond</a></dt></p>
+<p><dd></dd>
+</dl></p>
+<h2>Members</h2><p><dl></p>
+<p><dt><a href="#OFFSET_X">OFFSET_X</a></dt></p>
+<p><dd><p>Horizontial offset for each square on the playing space</p>
+</dd></p>
+<p><dt><a href="#OFFSET_Y">OFFSET_Y</a></dt></p>
+<p><dd><p>Vertical offset for each square on the playing space</p>
+</dd></p>
+<p><dt><a href="#NUM_COLS">NUM_COLS</a></dt></p>
+<p><dd><p>Total number of columns in the playing space
+TODO:  make it dynamic instead of static (maybe based on levels?)</p>
+</dd></p>
+<p><dt><a href="#NUM_ROWS">NUM_ROWS</a></dt></p>
+<p><dd><p>Total number of rows in the playing space
+TODO:  make it dynamic instead of static (maybe based on levels?)</p>
+</dd></p>
+<p><dt><a href="#FIRST_COL">FIRST_COL</a></dt></p>
+<p><dd><p>Number of the left most column in the playing space</p>
+</dd></p>
+<p><dt><a href="#FIRST_ROW">FIRST_ROW</a></dt></p>
+<p><dd><p>Number of the top row in the playing space</p>
+</dd></p>
+<p><dt><a href="#NUM_ROWS_OF_START_AREA">NUM_ROWS_OF_START_AREA</a></dt></p>
+<p><dd><p>Number of rows on which player can safely walk.</p>
+</dd></p>
+<p><dt><a href="#NUM_ROWS_PATH_OFFSET">NUM_ROWS_PATH_OFFSET</a></dt></p>
+<p><dd><p>Offset from the top of the playing area to the first row of path.</p>
+</dd></p>
+<p><dt><a href="#NUM_ROWS_OF_ENEMY_PATH">NUM_ROWS_OF_ENEMY_PATH</a></dt></p>
+<p><dd><p>Number of rows on which enemies walk.</p>
+</dd></p>
+<p><dt><a href="#NUM_ENEMIES">NUM_ENEMIES</a></dt></p>
+<p><dd><p>The starting number of enemies to render in the game.
+TODO:  make it dynamic. (based on level?)</p>
+</dd></p>
+<p><dt><a href="#UUID">UUID</a></dt></p>
+<p><dd><p>Fast UUID generator, RFC4122 version 4 compliant.
+(This is overkill for this application, but why not?)</p>
+</dd>
+</dl></p>
+<h2>Functions</h2><p><dl></p>
+<p><dt><a href="#compareFilenames">compareFilenames(filename1, filename2)</a> â‡’ <code>boolean</code></dt></p>
+<p><dd><p>compares the file names of two files, stripping the file path if necessary</p>
+</dd></p>
+<p><dt><a href="#_getFilenameNoPath">_getFilenameNoPath(name)</a> â‡’ <code>string</code></dt></p>
+<p><dd><p>returns just the filename of the given string striping the file path.</p>
+</dd>
+</dl>
+<a name="Scoreboard"></a></p>
+<h2>Scoreboard</h2><p><strong>Kind</strong>: global class</p>
+<ul>
+<li><a href="#Scoreboard">Scoreboard</a><ul>
+<li><a href="#new_Scoreboard_new">new Scoreboard()</a></li>
+<li><a href="#Scoreboard+CELEBRATION_DELAY">.CELEBRATION_DELAY</a> â‡’ <code>number</code></li>
+<li><a href="#Scoreboard+increment">.increment(value)</a></li>
+<li><a href="#Scoreboard+decrement">.decrement(value)</a></li>
+<li><a href="#Scoreboard+reset">.reset()</a></li>
+<li><a href="#Scoreboard+render">.render()</a></li>
+<li><a href="#Scoreboard+blinkScore">.blinkScore(dt, color)</a></li>
+<li><a href="#Scoreboard+animate">.animate(dt, duration, color)</a></li>
+<li><a href="#Scoreboard+update">.update(dt)</a></li>
+</ul>
 </li>
-<li><p>Collectsbles.  The player can score extra points by picking up different types of Gems.<br>a.  Saphires (Blue) are 1 extra point<br>b.  Emeralds (Green) are 2 extra points.
-c.  Diamonds (Yellow) are 5 extra points.</p>
+</ul>
+<p><a name="new_Scoreboard_new"></a></p>
+<h3>new Scoreboard()</h3><p>Represents the scoreboard where the player's score is displayed.</p>
+<p><a name="Scoreboard+CELEBRATION_DELAY"></a></p>
+<h3>scoreboard.CELEBRATION_DELAY â‡’ <code>number</code></h3><p>how long to celebrate a score</p>
+<p><strong>Kind</strong>: instance property of <code><a href="#Scoreboard">Scoreboard</a></code>
+<strong>Returns</strong>: <code>number</code> - number of seconds to celebrate (continue animation)
+<a name="Scoreboard+increment"></a></p>
+<h3>scoreboard.increment(value)</h3><p>increases the game's score</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#Scoreboard">Scoreboard</a></code></p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>value</td>
+<td><code>number</code></td>
+<td>number of points by which to increase the score</td>
+</tr>
+</tbody>
+</table>
+<p><a name="Scoreboard+decrement"></a></p>
+<h3>scoreboard.decrement(value)</h3><p>decreases the game's score</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#Scoreboard">Scoreboard</a></code></p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>value</td>
+<td><code>number</code></td>
+<td>number of points by which to decrease the score</td>
+</tr>
+</tbody>
+</table>
+<p><a name="Scoreboard+reset"></a></p>
+<h3>scoreboard.reset()</h3><p>restores the scoreboard to its initial state after an animation changes it.</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#Scoreboard">Scoreboard</a></code>
+<a name="Scoreboard+render"></a></p>
+<h3>scoreboard.render()</h3><p>draws the scoreboard.</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#Scoreboard">Scoreboard</a></code>
+<a name="Scoreboard+blinkScore"></a></p>
+<h3>scoreboard.blinkScore(dt, color)</h3><p>makes the score blink.</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#Scoreboard">Scoreboard</a></code></p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>dt</td>
+<td><code>number</code></td>
+<td>time delta information</td>
+</tr>
+<tr>
+<td>color</td>
+<td><code>string</code></td>
+<td>color code for the to use color for the numbers on the scoreboard.</td>
+</tr>
+</tbody>
+</table>
+<p><a name="Scoreboard+animate"></a></p>
+<h3>scoreboard.animate(dt, duration, color)</h3><p>animate the score making it blink.</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#Scoreboard">Scoreboard</a></code></p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>dt</td>
+<td><code>number</code></td>
+<td>time delta information</td>
+</tr>
+<tr>
+<td>duration</td>
+<td><code>number</code></td>
+<td>how long to hold between blinks.</td>
+</tr>
+<tr>
+<td>color</td>
+<td><code>string</code></td>
+<td>color code for the to use color for the numbers on the scoreboard.</td>
+</tr>
+</tbody>
+</table>
+<p><a name="Scoreboard+update"></a></p>
+<h3>scoreboard.update(dt)</h3><p>Updates the scoreboard: Engine calls this method for each iteration of the animation frame</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#Scoreboard">Scoreboard</a></code></p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>dt</td>
+<td><code>number</code></td>
+<td>time delta information</td>
+</tr>
+</tbody>
+</table>
+<p><a name="GamePiece"></a></p>
+<h2>GamePiece</h2><p><strong>Kind</strong>: global class</p>
+<ul>
+<li><a href="#GamePiece">GamePiece</a><ul>
+<li><a href="#new_GamePiece_new">new GamePiece()</a></li>
+<li><a href="#GamePiece+CELEBRATION_DELAY">.CELEBRATION_DELAY</a> â‡’ <code>number</code></li>
+<li><a href="#GamePiece+COLLISION_ANIMATION_DELAY">.COLLISION_ANIMATION_DELAY</a> â‡’ <code>number</code></li>
+<li><a href="#GamePiece+initAnimationState">.initAnimationState()</a></li>
+<li><a href="#GamePiece+_updateX">._updateX()</a></li>
+<li><a href="#GamePiece+_updateY">._updateY()</a></li>
+<li><a href="#GamePiece+randomRow">.randomRow()</a> â‡’ <code>number</code></li>
+<li><a href="#GamePiece+randomCol">.randomCol()</a> â‡’ <code>number</code></li>
+<li><a href="#GamePiece+getSpriteImg">.getSpriteImg()</a> â‡’ <code>Image</code></li>
+<li><a href="#GamePiece+animate">.animate(dt, delta, duration, moveHorizontal, moveVertical)</a></li>
+<li><a href="#GamePiece+animateBlink">.animateBlink(dt, duration)</a></li>
+</ul>
 </li>
-<li><p>Animation to the player after scoring or a collision.</p>
+</ul>
+<p><a name="new_GamePiece_new"></a></p>
+<h3>new GamePiece()</h3><p>Represents a playing piece on the board (Base class of: Player, Enemy, Gem).
+Provides common animation methods for subclasses and some utility methods</p>
+<p><a name="GamePiece+CELEBRATION_DELAY"></a></p>
+<h3>gamePiece.CELEBRATION_DELAY â‡’ <code>number</code></h3><p>how long to celebrate a score</p>
+<p><strong>Kind</strong>: instance property of <code><a href="#GamePiece">GamePiece</a></code>
+<strong>Returns</strong>: <code>number</code> - seconds to delay for celebration animations
+<a name="GamePiece+COLLISION_ANIMATION_DELAY"></a></p>
+<h3>gamePiece.COLLISION_ANIMATION_DELAY â‡’ <code>number</code></h3><p>how long to animate a collision</p>
+<p><strong>Kind</strong>: instance property of <code><a href="#GamePiece">GamePiece</a></code>
+<strong>Returns</strong>: <code>number</code> - seconds to delay for collision animations
+<a name="GamePiece+initAnimationState"></a></p>
+<h3>gamePiece.initAnimationState()</h3><p>resets this GamePiece back to a state where it is ready to perform an animation.</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#GamePiece">GamePiece</a></code>
+<a name="GamePiece+_updateX"></a></p>
+<h3>gamePiece._updateX()</h3><p>update the x coordinate of the object based on its current column.</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#GamePiece">GamePiece</a></code>
+<a name="GamePiece+_updateY"></a></p>
+<h3>gamePiece._updateY()</h3><p>update the y coordinate of the object based on its current randomRow.</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#GamePiece">GamePiece</a></code>
+<a name="GamePiece+randomRow"></a></p>
+<h3>gamePiece.randomRow() â‡’ <code>number</code></h3><p>provides a row number selected randomly</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#GamePiece">GamePiece</a></code>
+<strong>Returns</strong>: <code>number</code> - a random postive integer representing a row where enemies walk
+(i.e. possible values returned represent the row numbers of the the stone walkway.)
+<a name="GamePiece+randomCol"></a></p>
+<h3>gamePiece.randomCol() â‡’ <code>number</code></h3><p>provides a row number selected randomly</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#GamePiece">GamePiece</a></code>
+<strong>Returns</strong>: <code>number</code> - returns random integer representing a column in the playing space
+<a name="GamePiece+getSpriteImg"></a></p>
+<h3>gamePiece.getSpriteImg() â‡’ <code>Image</code></h3><p>Retrieves the image for this piece from the resource cache.</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#GamePiece">GamePiece</a></code>
+<strong>Returns</strong>: <code>Image</code> - returns images representing this piece on the board.
+<a name="GamePiece+animate"></a></p>
+<h3>gamePiece.animate(dt, delta, duration, moveHorizontal, moveVertical)</h3><p>Shakes the piece back and forth to show dread or excitement.</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#GamePiece">GamePiece</a></code></p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>dt</td>
+<td><code>number</code></td>
+<td>delta of the time since last frame</td>
+</tr>
+<tr>
+<td>delta</td>
+<td><code>number</code></td>
+<td>distance to move piece in animation.</td>
+</tr>
+<tr>
+<td>duration</td>
+<td><code>number</code></td>
+<td>how long to wait between shake movements</td>
+</tr>
+<tr>
+<td>moveHorizontal</td>
+<td><code>boolean</code></td>
+<td>move on x axis (horizontally)</td>
+</tr>
+<tr>
+<td>moveVertical</td>
+<td><code>boolean</code></td>
+<td>move on y axis (vertically)</td>
+</tr>
+</tbody>
+</table>
+<p><a name="GamePiece+animateBlink"></a></p>
+<h3>gamePiece.animateBlink(dt, duration)</h3><p>Blink piece on and off (to show the piece is going to diappear for good).</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#GamePiece">GamePiece</a></code></p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>dt</td>
+<td><code>number</code></td>
+<td>delta of the time since last frame</td>
+</tr>
+<tr>
+<td>duration</td>
+<td><code>number</code></td>
+<td>how long to wait between shake movements</td>
+</tr>
+</tbody>
+</table>
+<p><a name="Enemy"></a></p>
+<h2>Enemy</h2><p><strong>Kind</strong>: global class</p>
+<ul>
+<li><a href="#Enemy">Enemy</a><ul>
+<li><a href="#new_Enemy_new">new Enemy()</a></li>
+<li><a href="#Enemy+setSpeed">.setSpeed()</a></li>
+<li><a href="#Enemy+_setSpeed">._setSpeed()</a> â‡’ <code>number</code></li>
+<li><a href="#Enemy+move">.move()</a></li>
+<li><a href="#Enemy+animateCollision">.animateCollision()</a></li>
+<li><a href="#Enemy+reset">.reset()</a></li>
+<li><a href="#Enemy+update">.update(dt,)</a></li>
+</ul>
 </li>
-</ol>
-<p>There is currently only a single level and the play never stops.  </p></article>
+</ul>
+<p><a name="new_Enemy_new"></a></p>
+<h3>new Enemy()</h3><p>Represents the enemy our player must avoid at all costs.</p>
+<p><a name="Enemy+setSpeed"></a></p>
+<h3>enemy.setSpeed()</h3><p>Assigns a random speed to this enemy.</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#Enemy">Enemy</a></code>
+<a name="Enemy+_setSpeed"></a></p>
+<h3>enemy._setSpeed() â‡’ <code>number</code></h3><p>utility function to find an accpetable speed for this enemy
+recurses until speed that is fast enough is retruned from the randomizer.</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#Enemy">Enemy</a></code>
+<strong>Returns</strong>: <code>number</code> - - a usable speed
+<a name="Enemy+move"></a></p>
+<h3>enemy.move()</h3><p>Moves the Enemy farther right.
+Moves to the right unless the end of the row is reached,
+in which case, reset the Enemy back to the left side of the screen.</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#Enemy">Enemy</a></code>
+<a name="Enemy+animateCollision"></a></p>
+<h3>enemy.animateCollision()</h3><p>make the enemy dance (because of a Collision with a player)</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#Enemy">Enemy</a></code>
+<a name="Enemy+reset"></a></p>
+<h3>enemy.reset()</h3><p>Places the Enemy into the starting position to the left
+selecting a random row and placing the enemy off the screen.</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#Enemy">Enemy</a></code>
+<a name="Enemy+update"></a></p>
+<h3>enemy.update(dt,)</h3><p>Update the enemy's position, required method for game</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#Enemy">Enemy</a></code></p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>dt,</td>
+<td><code>number</code></td>
+<td>a time delta between ticks</td>
+</tr>
+</tbody>
+</table>
+<p><a name="Player"></a></p>
+<h2>Player</h2><p><strong>Kind</strong>: global class</p>
+<ul>
+<li><a href="#Player">Player</a><ul>
+<li><a href="#new_Player_new">new Player()</a></li>
+<li><a href="#Player+INIT_COL">.INIT_COL</a></li>
+<li><a href="#Player+INIT_ROW">.INIT_ROW</a></li>
+<li><a href="#Player+reset">.reset()</a></li>
+<li><a href="#Player+collisionCheck">.collisionCheck()</a></li>
+<li><a href="#Player+collisionCheckLeft">.collisionCheckLeft(enemy)</a></li>
+<li><a href="#Player+collisionCheckRight">.collisionCheckRight(enemy)</a></li>
+<li><a href="#Player+collectGems">.collectGems()</a></li>
+<li><a href="#Player+scoreCheck">.scoreCheck(dt)</a></li>
+<li><a href="#Player+update">.update(dt,)</a></li>
+</ul>
+</li>
+</ul>
+<p><a name="new_Player_new"></a></p>
+<h3>new Player()</h3><p>Represents the little guy running around in the arena!
+Runs accross the screen and has a scoreboard that it updates
+when he/she makes it to the 'water.'  Animates when there
+is a collision with any of the enemies or when the water is reached.</p>
+<p><a name="Player+INIT_COL"></a></p>
+<h3>player.INIT_COL</h3><p>Starting column for Player</p>
+<p><strong>Kind</strong>: instance property of <code><a href="#Player">Player</a></code>
+<a name="Player+INIT_ROW"></a></p>
+<h3>player.INIT_ROW</h3><p>Starting row for Player</p>
+<p><strong>Kind</strong>: instance property of <code><a href="#Player">Player</a></code>
+<a name="Player+reset"></a></p>
+<h3>player.reset()</h3><p>Places the player back to the original position
+after a collision and initializes all the parameters needed
+to run animation after a collision.</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#Player">Player</a></code>
+<a name="Player+collisionCheck"></a></p>
+<h3>player.collisionCheck()</h3><p>Determine if the player has collided with an enemy.</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#Player">Player</a></code>
+<a name="Player+collisionCheckLeft"></a></p>
+<h3>player.collisionCheckLeft(enemy)</h3><p>Determine if the left side of the player has touched an enemy.</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#Player">Player</a></code></p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>enemy</td>
+<td><code><a href="#Enemy">Enemy</a></code></td>
+</tr>
+</tbody>
+</table>
+<p><a name="Player+collisionCheckRight"></a></p>
+<h3>player.collisionCheckRight(enemy)</h3><p>Determine if the right side of the player has touched an enemy.</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#Player">Player</a></code></p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>enemy</td>
+<td><code><a href="#Enemy">Enemy</a></code></td>
+</tr>
+</tbody>
+</table>
+<p><a name="Player+collectGems"></a></p>
+<h3>player.collectGems()</h3><p>Check if the player is in the same square as a gem.
+If so, award the player the points for the gem.</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#Player">Player</a></code>
+<a name="Player+scoreCheck"></a></p>
+<h3>player.scoreCheck(dt)</h3><p>Determine if the player has scored by reaching the top of the playing space.</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#Player">Player</a></code></p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>dt</td>
+<td><code>number</code></td>
+<td>time delta information</td>
+</tr>
+</tbody>
+</table>
+<p><a name="Player+update"></a></p>
+<h3>player.update(dt,)</h3><p>Update the players's position, required method for game.</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#Player">Player</a></code></p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>dt,</td>
+<td><code>number</code></td>
+<td>a time delta between ticks</td>
+</tr>
+</tbody>
+</table>
+<p><a name="Gem"></a></p>
+<h2>Gem</h2><p><strong>Kind</strong>: global class</p>
+<ul>
+<li><a href="#Gem">Gem</a><ul>
+<li><a href="#new_Gem_new">new Gem()</a></li>
+<li><a href="#Gem+getSpriteImg">.getSpriteImg()</a></li>
+<li><a href="#Gem+hideSpriteImg">.hideSpriteImg()</a></li>
+<li><a href="#Gem+showSpriteImg">.showSpriteImg()</a></li>
+<li><a href="#Gem+isSpriteImgVisible">.isSpriteImgVisible()</a></li>
+<li><a href="#Gem+setUniqueLocation">.setUniqueLocation()</a></li>
+<li><a href="#Gem+animateScore">.animateScore(dt)</a></li>
+<li><a href="#Gem+animateCountdown">.animateCountdown(dt)</a></li>
+</ul>
+</li>
+</ul>
+<p><a name="new_Gem_new"></a></p>
+<h3>new Gem()</h3><p>representing the a gem worth extra points if a player
+picks it up.</p>
+<p><a name="Gem+getSpriteImg"></a></p>
+<h3>gem.getSpriteImg()</h3><p>Overrides parent (GamePiece) method to handle a Gem's local image.
+The resources cache cannot be used for gems because the</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#Gem">Gem</a></code>
+<a name="Gem+hideSpriteImg"></a></p>
+<h3>gem.hideSpriteImg()</h3><p>Overrides parent (GamePiece) method to handle a Gem's local image</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#Gem">Gem</a></code>
+<a name="Gem+showSpriteImg"></a></p>
+<h3>gem.showSpriteImg()</h3><p>Overrides parent (GamePiece) method to handle a Gem's local image</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#Gem">Gem</a></code>
+<a name="Gem+isSpriteImgVisible"></a></p>
+<h3>gem.isSpriteImgVisible()</h3><p>Overrides parent (GamePiece) method to handle a Gem's local image</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#Gem">Gem</a></code>
+<a name="Gem+setUniqueLocation"></a></p>
+<h3>gem.setUniqueLocation()</h3><p>Find a square on the board free of other gems.
+Keeps a gem from being placed on top of another gem.</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#Gem">Gem</a></code>
+<a name="Gem+animateScore"></a></p>
+<h3>gem.animateScore(dt)</h3><p>Make the gem move back and forth (when collected)</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#Gem">Gem</a></code></p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>dt</td>
+<td><code>number</code></td>
+<td>the time delta information</td>
+</tr>
+</tbody>
+</table>
+<p><a name="Gem+animateCountdown"></a></p>
+<h3>gem.animateCountdown(dt)</h3><p>Blinking on and off (during the countdown before diappearing)</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#Gem">Gem</a></code></p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>dt</td>
+<td><code>number</code></td>
+<td>the time delta information</td>
+</tr>
+</tbody>
+</table>
+<p><a name="Saphire"></a></p>
+<h2>Saphire</h2><p><strong>Kind</strong>: global class
+<a name="new_Saphire_new"></a></p>
+<h3>new Saphire()</h3><p>Represents a Saphire the least valuable of the Gems
+and the easiest of the Gems to collect because it stays on the board the longest.</p>
+<p><a name="Emerald"></a></p>
+<h2>Emerald</h2><p><strong>Kind</strong>: global class</p>
+<ul>
+<li><a href="#Emerald">Emerald</a><ul>
+<li><a href="#new_Emerald_new">new Emerald()</a></li>
+<li><a href="#Emerald+randomRow">.randomRow()</a></li>
+</ul>
+</li>
+</ul>
+<p><a name="new_Emerald_new"></a></p>
+<h3>new Emerald()</h3><p>Represents an Emerald a more valuable Gem</p>
+<p><a name="Emerald+randomRow"></a></p>
+<h3>emerald.randomRow()</h3><p>Overrides parent method to place Emeralds only in the top 3 rows.</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#Emerald">Emerald</a></code>
+<a name="Diamond"></a></p>
+<h2>Diamond</h2><p><strong>Kind</strong>: global class</p>
+<ul>
+<li><a href="#Diamond">Diamond</a><ul>
+<li><a href="#new_Diamond_new">new Diamond()</a></li>
+<li><a href="#Diamond+randomRow">.randomRow()</a></li>
+</ul>
+</li>
+</ul>
+<p><a name="new_Diamond_new"></a></p>
+<h3>new Diamond()</h3><p>Represents a Diamond the most valuable of the Gems
+and the hardest of the Gems to collect because it stays on the board for a short time.</p>
+<p><a name="Diamond+randomRow"></a></p>
+<h3>diamond.randomRow()</h3><p>Overrides parent method to place Diamonds only in the top 2 rows.</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#Diamond">Diamond</a></code>
+<a name="OFFSET_X"></a></p>
+<h2>OFFSET_X</h2><p>Horizontial offset for each square on the playing space</p>
+<p><strong>Kind</strong>: global variable
+<a name="OFFSET_Y"></a></p>
+<h2>OFFSET_Y</h2><p>Vertical offset for each square on the playing space</p>
+<p><strong>Kind</strong>: global variable
+<a name="NUM_COLS"></a></p>
+<h2>NUM_COLS</h2><p>Total number of columns in the playing space
+TODO:  make it dynamic instead of static (maybe based on levels?)</p>
+<p><strong>Kind</strong>: global variable
+<a name="NUM_ROWS"></a></p>
+<h2>NUM_ROWS</h2><p>Total number of rows in the playing space
+TODO:  make it dynamic instead of static (maybe based on levels?)</p>
+<p><strong>Kind</strong>: global variable
+<a name="FIRST_COL"></a></p>
+<h2>FIRST_COL</h2><p>Number of the left most column in the playing space</p>
+<p><strong>Kind</strong>: global variable
+<a name="FIRST_ROW"></a></p>
+<h2>FIRST_ROW</h2><p>Number of the top row in the playing space</p>
+<p><strong>Kind</strong>: global variable
+<a name="NUM_ROWS_OF_START_AREA"></a></p>
+<h2>NUM_ROWS_OF_START_AREA</h2><p>Number of rows on which player can safely walk.</p>
+<p><strong>Kind</strong>: global variable
+<a name="NUM_ROWS_PATH_OFFSET"></a></p>
+<h2>NUM_ROWS_PATH_OFFSET</h2><p>Offset from the top of the playing area to the first row of path.</p>
+<p><strong>Kind</strong>: global variable
+<a name="NUM_ROWS_OF_ENEMY_PATH"></a></p>
+<h2>NUM_ROWS_OF_ENEMY_PATH</h2><p>Number of rows on which enemies walk.</p>
+<p><strong>Kind</strong>: global variable
+<a name="NUM_ENEMIES"></a></p>
+<h2>NUM_ENEMIES</h2><p>The starting number of enemies to render in the game.
+TODO:  make it dynamic. (based on level?)</p>
+<p><strong>Kind</strong>: global variable
+<a name="UUID"></a></p>
+<h2>UUID</h2><p>Fast UUID generator, RFC4122 version 4 compliant.
+(This is overkill for this application, but why not?)</p>
+<p><strong>Kind</strong>: global variable
+<strong>Link</strong>: http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript/21963136#21963136
+<strong>Link</strong>: http://jcward.com/UUID.js</p>
+<p>Copyright (c) 2015 Jeff Ward
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+documentation files (the &quot;Software&quot;), to deal in the Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and
+to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all copies or substantial portions
+of the Software.
+THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+IN THE SOFTWARE.
+<strong>Author:</strong> Jeff Ward (jcward.com).
+<strong>License</strong>: MIT license
+<a name="compareFilenames"></a></p>
+<h2>compareFilenames(filename1, filename2) â‡’ <code>boolean</code></h2><p>compares the file names of two files, stripping the file path if necessary</p>
+<p><strong>Kind</strong>: global function
+<strong>Returns</strong>: <code>boolean</code> - true if file names match</p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>filename1</td>
+<td><code>string</code></td>
+<td>filename that may or may not include path.  Can be a encoded URI as well</td>
+</tr>
+<tr>
+<td>filename2</td>
+<td><code>string</code></td>
+<td>the filename (with full path or relative path and/or URI) to comapare to filename1</td>
+</tr>
+</tbody>
+</table>
+<p><a name="_getFilenameNoPath"></a></p>
+<h2>_getFilenameNoPath(name) â‡’ <code>string</code></h2><p>returns just the filename of the given string striping the file path.</p>
+<p><strong>Kind</strong>: global function
+<strong>Returns</strong>: <code>string</code> - name of the file without the path.</p>
+<p>source http://stackoverflow.com/questions/423376/how-to-get-the-file-name-from-a-full-path-using-javascript</p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>name</td>
+<td><code>string</code></td>
+<td>filename that may or may not include path.  Can be a encoded URI as well</td>
+</tr>
+</tbody>
+</table></article>
     </section>
 
 
@@ -74,7 +803,7 @@ c.  Diamonds (Yellow) are 5 extra points.</p>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0-dev</a> on Sat Sep 19 2015 19:58:02 GMT-0700 (MST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0-dev</a> on Sun Sep 20 2015 18:46:21 GMT-0700 (MST)
 </footer>
 
 <script> prettyPrint(); </script>

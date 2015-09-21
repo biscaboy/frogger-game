@@ -7,9 +7,9 @@ implemented in Javascript using HTML5 Canvas.
 The game replicates the concept of the 1980's arcade game **Frogger**, with a path to be crossed by the player
 all the while avoiding *Enemies* who march across the screen from left to right.
 
-[Rubric for this project](https://www.udacity.com/course/viewer#!/c-ud015/l-3072058665/m-3072588797)
-
 Currently there is only a single level, and the play never stops.
+
+[Rubric for this project](https://www.udacity.com/course/viewer#!/c-ud015/l-3072058665/m-3072588797)
 
 ##Additional Functionality Beyond Rubic
 
@@ -42,12 +42,12 @@ Enjoy!
 
 ## Contributors
 
-## Author
+### Author
 David Dickinson
 
 The project is based on scripts provided by Udacity instructors (`js/resources.js` and `js/engine.js`)
 
-## Other sources used
+### Other Sources Used
 Jeff Ward (jcward.com) - A [modualized library](http://jcward.com/UUID.js) for creating a Universally Unique Identifier is
 included in the project. (see `js/app.js`)
 

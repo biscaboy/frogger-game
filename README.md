@@ -41,7 +41,7 @@ Execute frogger-game/index.html in your favorite HTML5 enabled browser.
 
 Enjoy!
 
-# Documentation
+## Documentation
 
 [JSDoc files](https://github.com/biscaboy/frogger-game/tree/master/doc) have been provided in the `doc` directory.
 

@@ -1,8 +1,5 @@
 #Udacity FEND Project 3: Arcade Game - Frogger Clone
 
-##Author
-David Dickinson - based on scripts provided by Udacity
-
 ##Description
 This game is a development exercise to demonstrate understanding of object oriented programming concepts
 implemented in Javascript using HTML5 Canvas.
@@ -43,4 +40,18 @@ Execute frogger-game/index.html in your favorite HTML5 enabled browser.
 
 Enjoy!
 
+## Contributors
+
+## Author
+David Dickinson
+
+The project is based on scripts provided by Udacity instructors (`js/resources.js` and `js/engine.js`)
+
+## Other sources used
+Jeff Ward (jcward.com) - A [modualized library](http://jcward.com/UUID.js) for creating a Universally Unique Identifier is
+included in the project. (see `js/app.js`)
+
+[Stakeoverflow - Stripping Path from a Filename.](http://stackoverflow.com/questions/423376/how-to-get-the-file-name-from-a-full-path-using-javascript)
+
+[MDN Canvas API Docs - Drawing Shapes with Canvas.]( https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Drawing_shapes)
 

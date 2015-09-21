@@ -1,4 +1,32 @@
-/*
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: app.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: app.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/*
  app.js - Frogger Game Implementation
  Author:  David Dickinson from provided script by Udacity Instructors
 */
@@ -149,16 +177,16 @@ function _roundedRect(x, y, width, height, radius){
  **/
 var UUID = (function() {
   var self = {};
-  var lut = []; for (var i=0; i<256; i++) { lut[i] = (i<16?'0':'')+(i).toString(16); }
+  var lut = []; for (var i=0; i&lt;256; i++) { lut[i] = (i&lt;16?'0':'')+(i).toString(16); }
   self.generate = function() {
     var d0 = Math.random()*0xffffffff|0;
     var d1 = Math.random()*0xffffffff|0;
     var d2 = Math.random()*0xffffffff|0;
     var d3 = Math.random()*0xffffffff|0;
-    return lut[d0&0xff]+lut[d0>>8&0xff]+lut[d0>>16&0xff]+lut[d0>>24&0xff]+'-'+
-      lut[d1&0xff]+lut[d1>>8&0xff]+'-'+lut[d1>>16&0x0f|0x40]+lut[d1>>24&0xff]+'-'+
-      lut[d2&0x3f|0x80]+lut[d2>>8&0xff]+'-'+lut[d2>>16&0xff]+lut[d2>>24&0xff]+
-      lut[d3&0xff]+lut[d3>>8&0xff]+lut[d3>>16&0xff]+lut[d3>>24&0xff];
+    return lut[d0&amp;0xff]+lut[d0>>8&amp;0xff]+lut[d0>>16&amp;0xff]+lut[d0>>24&amp;0xff]+'-'+
+      lut[d1&amp;0xff]+lut[d1>>8&amp;0xff]+'-'+lut[d1>>16&amp;0x0f|0x40]+lut[d1>>24&amp;0xff]+'-'+
+      lut[d2&amp;0x3f|0x80]+lut[d2>>8&amp;0xff]+'-'+lut[d2>>16&amp;0xff]+lut[d2>>24&amp;0xff]+
+      lut[d3&amp;0xff]+lut[d3>>8&amp;0xff]+lut[d3>>16&amp;0xff]+lut[d3>>24&amp;0xff];
   }
   return self;
 })();
@@ -260,7 +288,7 @@ Scoreboard.prototype.increment = function(value) {
 * @param {number} value - number of points by which to decrease the score
 */
 Scoreboard.prototype.decrement = function(value) {
-	if (this.score > 0 && this.score - value >= 0) {
+	if (this.score > 0 &amp;&amp; this.score - value >= 0) {
 		this.score -= value;
 	} else {
 		this.score = 0;
@@ -591,12 +619,11 @@ Enemy.prototype.setSpeed = function() {
 /**
 * @description utility function to find an accpetable speed for this enemy
 * recurses until speed that is fast enough is retruned from the randomizer.
-* @returns {number} - a usable speed
 */
 Enemy.prototype._setSpeed = function() {
 	var speed = Math.floor(Math.random() * this.ENEMY_SPEED_THROTTLE);
 
-	if (speed < this.ENEMY_SPEED_MINIMUM) {
+	if (speed &lt; this.ENEMY_SPEED_MINIMUM) {
 		speed = this._setSpeed;
 	}
 	return speed * 10;
@@ -608,7 +635,7 @@ Enemy.prototype._setSpeed = function() {
 * in which case, reset the Enemy back to the left side of the screen.
 */
 Enemy.prototype.move = function(dt) {
-    if (this.x < NUM_COLS * OFFSET_X + this.xOffset) {
+    if (this.x &lt; NUM_COLS * OFFSET_X + this.xOffset) {
         this.x = this.x + (this.speed * dt);
     } else {
         this.reset();
@@ -649,7 +676,7 @@ Enemy.prototype.update = function(dt) {
     	// ran into a player, so celebrate a collision!
 		this.animationTimer += dt;
 		// while timer is running, run animation or stop when timer expires.
-		if (this.animationTimer < this.COLLISION_ANIMATION_DELAY) {
+		if (this.animationTimer &lt; this.COLLISION_ANIMATION_DELAY) {
 			this.animateCollision(dt);
 		} else {
 			this.initAnimationState();
@@ -731,10 +758,10 @@ Player.prototype.animateScore = function(dt) {
 */
 Player.prototype.collisionCheck = function() {
 	if (!this.hasCollided) {
-		for (var i = 0; i < allEnemies.length; i++) {
+		for (var i = 0; i &lt; allEnemies.length; i++) {
 			// check if the player is in the same row.
 			// if so, see if the edges of the player are touching an enemy
-	        if (this.row === allEnemies[i].row &&
+	        if (this.row === allEnemies[i].row &amp;&amp;
 	        	(this.collisionCheckLeft(allEnemies[i]) ||
 	        	this.collisionCheckRight(allEnemies[i]))) {
 	            //collision! Player loses a point!
@@ -757,8 +784,8 @@ Player.prototype.collisionCheckLeft = function(enemy) {
 	// account for a 2 pixel margin on the enemy image
 	// account for a 10 pixel margin on the player images (blank space on left and right)
 	// TODO: how could I account for PNG image margins (blank space) dynamically?
-	return (this.x + 10  > enemy.x + 2 &&
-	        this.x + 10  < enemy.x + enemy.getSpriteImg().width - 2 );
+	return (this.x + 10  > enemy.x + 2 &amp;&amp;
+	        this.x + 10  &lt; enemy.x + enemy.getSpriteImg().width - 2 );
 };
 
 /**
@@ -770,8 +797,8 @@ Player.prototype.collisionCheckRight = function(enemy) {
 	// account for a 2 pixel margin on the enemy image
 	// account for a 10 pixel margin on the player images (blank space on left and right)
 	// TODO: how could I account for PNG image margins (blank space) dynamically?
-	return (this.x + this.getSpriteImg().width - 10 > enemy.x + 2 &&
-	        this.x + this.getSpriteImg().width - 10 < enemy.x + enemy.getSpriteImg().width - 2);
+	return (this.x + this.getSpriteImg().width - 10 > enemy.x + 2 &amp;&amp;
+	        this.x + this.getSpriteImg().width - 10 &lt; enemy.x + enemy.getSpriteImg().width - 2);
 };
 
 /**
@@ -781,9 +808,9 @@ Player.prototype.collisionCheckRight = function(enemy) {
 Player.prototype.collectGems = function(){
 	// if in a collision situation do not check for gems.
     if (!this.hasCollided) {
-    	for (var i = 0; i < gems.length; i++) {
-    		if (this.col === gems[i].col &&
-    			this.row === gems[i].row &&
+    	for (var i = 0; i &lt; gems.length; i++) {
+    		if (this.col === gems[i].col &amp;&amp;
+    			this.row === gems[i].row &amp;&amp;
     			gems[i].isCollected === false) {
     			// collect the gem and remove it from the board
     			scoreboard.increment(gems[i].value);
@@ -829,7 +856,7 @@ Player.prototype.update = function(dt) {
 		// player is in an animation so increment the elapsed time to the timer
 		this.animationTimer += dt;
 		// while timer is running, run animation or stop when timer expires.
-		if (this.animationTimer < this.COLLISION_ANIMATION_DELAY) {
+		if (this.animationTimer &lt; this.COLLISION_ANIMATION_DELAY) {
 			this.animateCollision(dt);
 		} else {
 			this.reset();
@@ -848,32 +875,32 @@ Player.prototype.render = function() {
 };
 
 Player.prototype.moveUp = function() {
-    if (this.row > FIRST_ROW &&
-        this.row != FIRST_ROW &&
+    if (this.row > FIRST_ROW &amp;&amp;
+        this.row != FIRST_ROW &amp;&amp;
         !this.hasCollided) {
         this._decrementRow();
     }
 };
 
 Player.prototype.moveDown = function() {
-    if (this.row < NUM_ROWS &&
-        this.row != FIRST_ROW &&
+    if (this.row &lt; NUM_ROWS &amp;&amp;
+        this.row != FIRST_ROW &amp;&amp;
         !this.hasCollided) {
         this._incrementRow();
     }
 };
 
 Player.prototype.moveLeft = function() {
-    if (this.col > FIRST_COL &&
-        this.row != FIRST_ROW &&
+    if (this.col > FIRST_COL &amp;&amp;
+        this.row != FIRST_ROW &amp;&amp;
         !this.hasCollided) {
         this._decrementCol();
     }
 };
 
 Player.prototype.moveRight = function() {
-    if (this.col < NUM_COLS  &&
-        this.row != FIRST_ROW &&
+    if (this.col &lt; NUM_COLS  &amp;&amp;
+        this.row != FIRST_ROW &amp;&amp;
         !this.hasCollided) {
         this._incrementCol();
     }
@@ -962,8 +989,8 @@ Gem.prototype.setUniqueLocation = function(gems) {
 	this.row = this.randomRow();
 	this.col = this.randomCol();
 
-	for (var i = 0; i < gems.length; i++){
-		if (gems[i].row === this.row &&
+	for (var i = 0; i &lt; gems.length; i++){
+		if (gems[i].row === this.row &amp;&amp;
 			gems[i].col === this.col) {
 			// duplicate location, try again.
 			this.setUniqueLocation(gems);
@@ -1003,7 +1030,7 @@ Gem.prototype.update = function(dt) {
    		// animate gem so increment the elapsed time to the timer
 		this.animationTimer += dt;
 		// while timer is running, run animation or stop when timer expires.
-		if (this.animationTimer < this.COLLECTION_DELAY) {
+		if (this.animationTimer &lt; this.COLLECTION_DELAY) {
 			this.animateScore(dt);
 		} else {
 			this.remove();
@@ -1012,10 +1039,10 @@ Gem.prototype.update = function(dt) {
 		// Not collected yet.
 		// so if this timer runs out take the gem off the board.
 		this.countdownTimer -= dt;
-		if (this.countdownTimer < this.FINAL_COUNTDOWN_DELAY) {
+		if (this.countdownTimer &lt; this.FINAL_COUNTDOWN_DELAY) {
 			this.animateCountdown(dt);
 		}
-		if (this.countdownTimer < 0) {
+		if (this.countdownTimer &lt; 0) {
 			this.remove();
 		}
 	}
@@ -1023,7 +1050,7 @@ Gem.prototype.update = function(dt) {
 
 Gem.prototype.remove = function(){
 	// remove this gem from the board.
-	for (var i = 0; i < gems.length; i++) {
+	for (var i = 0; i &lt; gems.length; i++) {
 		if (this.id === gems[i].id){
 			gems.splice(i, 1); // removes gem from array.
 			break;
@@ -1121,7 +1148,7 @@ Diamond.prototype.randomRow = function() {
 // Place all enemy objects in an array called allEnemies
 var allEnemies = (function() {
     var enemies = [];
-    for (var i = 0; i < NUM_ENEMIES; i++) {
+    for (var i = 0; i &lt; NUM_ENEMIES; i++) {
         enemies.push(new Enemy());
     }
     return enemies;
@@ -1148,3 +1175,26 @@ var scoreboard = new Scoreboard();
 
 // cache for displayed gems, removed once collected by a player.
 var gems = [];
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Diamond.html">Diamond</a></li><li><a href="Emerald.html">Emerald</a></li><li><a href="Enemy.html">Enemy</a></li><li><a href="GamePiece.html">GamePiece</a></li><li><a href="Gem.html">Gem</a></li><li><a href="Player.html">Player</a></li><li><a href="Saphire.html">Saphire</a></li><li><a href="Scoreboard.html">Scoreboard</a></li></ul><h3>Global</h3><ul><li><a href="global.html#_getFilenameNoPath">_getFilenameNoPath</a></li><li><a href="global.html#compareFilenames">compareFilenames</a></li><li><a href="global.html#FIRST_COL">FIRST_COL</a></li><li><a href="global.html#FIRST_ROW">FIRST_ROW</a></li><li><a href="global.html#NUM_COLS">NUM_COLS</a></li><li><a href="global.html#NUM_ENEMIES">NUM_ENEMIES</a></li><li><a href="global.html#NUM_ROWS">NUM_ROWS</a></li><li><a href="global.html#NUM_ROWS_OF_ENEMY_PATH">NUM_ROWS_OF_ENEMY_PATH</a></li><li><a href="global.html#NUM_ROWS_OF_START_AREA">NUM_ROWS_OF_START_AREA</a></li><li><a href="global.html#NUM_ROWS_PATH_OFFSET">NUM_ROWS_PATH_OFFSET</a></li><li><a href="global.html#OFFSET_X">OFFSET_X</a></li><li><a href="global.html#OFFSET_Y">OFFSET_Y</a></li><li><a href="global.html#UUID">UUID</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0-dev</a> on Sat Sep 19 2015 19:58:01 GMT-0700 (MST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

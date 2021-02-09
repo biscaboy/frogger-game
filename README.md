@@ -1,4 +1,5 @@
-# Udacity FEND Project 3: Frogger Arcade Game
+# Frogger Arcade Game
+## Udacity FEND Project 3 - Object Oriented Programming with Javascript
 
 ## Description
 This game is a development exercise to demonstrate understanding of object oriented programming concepts

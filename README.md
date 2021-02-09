@@ -8,7 +8,7 @@ implemented in Javascript using HTML5 Canvas.
 The game replicates the concept of the 1980's arcade game **Frogger**, with a path to be crossed by the player
 all the while avoiding *Enemies* who march across the screen from left to right.
 
-Currently there is only a single level, and the play never stops.
+Currently there is only a single level, and the play never stops. [Play the game](https://biscaboy.github.io/frogger-game/).
 
 [Rubric for this project](https://www.udacity.com/course/viewer#!/c-ud015/l-3072058665/m-3072588797)
 
